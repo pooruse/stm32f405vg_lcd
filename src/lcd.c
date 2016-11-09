@@ -26,17 +26,17 @@
 #define CGRAM 0x40
 #define CGRAM_ADDR_MASK 0x3F
 
-#define DDRAM 0xC0
-#define DDRAM_ADDR_MASK 0x3F
+#define DDRAM 0x80
+#define DDRAM_ADDR_MASK 0x7F
 
-#define READ_BUSY_ADDR 0x1
+#define READ_BUSY_ADDR 0x100
 #define READ_BUSY_MASK 0x80
 #define READ_ADDR 0x3F
 
 #define WRITE 0x200
 #define WRITE_MASK 0xFF
 
-#define READ_DATA 0x3
+#define READ_DATA 0x300
 #define READ_DATA_MASK 0xFF
 
 
@@ -66,12 +66,15 @@
 
 uint8_t lcd_read(uint8_t command);
 void lcd_write(uint32_t data);
+void lcd_write_data(uint32_t data);
 void lcd_wait_busy(void);
 
 int delay;
 
 void lcd_init(void){
-    
+
+    uint8_t addr;
+    uint8_t dat;
     spi_init();
 
     lcd_write(FUNCTION | FUNCTION_DL);
@@ -81,27 +84,37 @@ void lcd_init(void){
 
     lcd_write(DISPLAY | DISPLAY_D);
     lcd_wait_busy();
-    lcd_write(DISPLAY | DISPLAY_D | DISPLAY_C);
+    lcd_write(DISPLAY | DISPLAY_D | DISPLAY_C | DISPLAY_B);
     lcd_wait_busy();
 
     lcd_write(CLEAR);
-    lcd_wait_busy();
-    lcd_write(ENTRY | ENTRY_S);
+    for(delay=0;delay<20000;delay++);
+
+    lcd_write(ENTRY | ENTRY_ID);
     lcd_wait_busy();
 
     lcd_write(HOME);
     lcd_wait_busy();
-    
+
+    lcd_write(CURSOR | CURSOR_RL);
+    lcd_write(DDRAM);
+    dat = 1;
+    addr = 0;
+
     while(1){
-	for(delay=0;delay<10000000;delay++);
-	gpio_set_debug_led();
-	lcd_write(DISPLAY | DISPLAY_D | DISPLAY_C);
-	lcd_wait_busy();
-	for(delay=0;delay<10000000;delay++);
-	gpio_reset_debug_led();
-	lcd_write(DISPLAY | DISPLAY_D);
+
+	for(delay = 0; delay < 1000000; delay++);
+	gpio_toggle_debug_led();
+	lcd_write(DDRAM | addr);
 	lcd_wait_busy();
 	
+	lcd_write(WRITE | 0x00);
+	lcd_wait_busy();
+	
+	lcd_write(WRITE | 0x50);
+	lcd_wait_busy();
+	addr++;
+	dat++;
     }
 }
 
