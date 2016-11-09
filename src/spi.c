@@ -39,7 +39,7 @@ void spi_init(void){
     
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
     GPIO_InitStructure.GPIO_Pin = SPI1_CS_GPIO_PIN;
-    GPIO_SetBits(SPI1_CS_GPIO_PORT, SPI1_CS_GPIO_PIN);
+    GPIO_ResetBits(SPI1_CS_GPIO_PORT, SPI1_CS_GPIO_PIN);
     GPIO_Init(SPI1_CS_GPIO_PORT, &GPIO_InitStructure);
 
     SPI_DeInit(SPI1);
@@ -49,7 +49,7 @@ void spi_init(void){
     SPI_InitStructure.SPI_CPOL = SPI_CPOL_Low;
     SPI_InitStructure.SPI_CPHA = SPI_CPHA_1Edge;
     SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;
-    SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_128;
+    SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_256;
     SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;
     SPI_InitStructure.SPI_CRCPolynomial = 7;
     SPI_Init(SPI1, &SPI_InitStructure);
@@ -59,23 +59,26 @@ void spi_init(void){
 
 void spi_tx(uint8_t dat){
 
+    GPIO_SetBits(SPI1_CS_GPIO_PORT, SPI1_CS_GPIO_PIN);    
     SPI_BiDirectionalLineConfig(SPI1, SPI_Direction_Tx);
     
     while(SPI_GetFlagStatus(SPI1, SPI_FLAG_TXE) == RESET);
     SPI_SendData(SPI1, dat);
     while(SPI_GetFlagStatus(SPI1, SPI_FLAG_BSY) == SET);
+    GPIO_ResetBits(SPI1_CS_GPIO_PORT, SPI1_CS_GPIO_PIN);    
 }
 
 uint8_t spi_rx(void){
 
     uint8_t dat;
 
+    GPIO_SetBits(SPI1_CS_GPIO_PORT, SPI1_CS_GPIO_PIN);    
     SPI_BiDirectionalLineConfig(SPI1, SPI_Direction_Rx);
     
     while(SPI_GetFlagStatus(SPI1, SPI_FLAG_RXNE) != RESET);
     SPI_BiDirectionalLineConfig(SPI1, SPI_Direction_Tx);
     dat = SPI_ReceiveData(SPI1);
     
-    
+    GPIO_ResetBits(SPI1_CS_GPIO_PORT, SPI1_CS_GPIO_PIN);    
     return dat;
 }

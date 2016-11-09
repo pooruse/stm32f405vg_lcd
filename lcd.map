@@ -4178,6 +4178,8 @@ Discarded input sections
                 0x0000000000000000       0x40 lib/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_spi.o
  .text.I2S_FullDuplexConfig
                 0x0000000000000000       0x9c lib/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_spi.o
+ .text.SPI_I2S_ReceiveData
+                0x0000000000000000       0x1c lib/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_spi.o
  .text.SPI_CalculateCRC
                 0x0000000000000000       0x40 lib/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_spi.o
  .text.SPI_TransmitCRC
@@ -4980,6 +4982,8 @@ Discarded input sections
  .text          0x0000000000000000        0x0 src/lcd.o
  .data          0x0000000000000000        0x0 src/lcd.o
  .bss           0x0000000000000000        0x0 src/lcd.o
+ .text.lcd_read
+                0x0000000000000000       0x48 src/lcd.o
  .debug_macro   0x0000000000000000      0x86e src/lcd.o
  .debug_macro   0x0000000000000000       0x22 src/lcd.o
  .debug_macro   0x0000000000000000       0x44 src/lcd.o
@@ -5185,6 +5189,7 @@ Discarded input sections
  .text          0x0000000000000000        0x0 src/spi.o
  .data          0x0000000000000000        0x0 src/spi.o
  .bss           0x0000000000000000        0x0 src/spi.o
+ .text.spi_rx   0x0000000000000000       0x58 src/spi.o
  .debug_macro   0x0000000000000000      0x86e src/spi.o
  .debug_macro   0x0000000000000000       0x65 src/spi.o
  .debug_macro   0x0000000000000000       0x3b src/spi.o
@@ -5299,7 +5304,7 @@ END GROUP
                 0x0000000008000000                g_pfnVectors
                 0x0000000008000188                . = ALIGN (0x4)
 
-.text           0x0000000008000188      0xc14
+.text           0x0000000008000188      0xba8
                 0x0000000008000188                . = ALIGN (0x4)
  *(.text)
  *(.text*)
@@ -5341,215 +5346,207 @@ END GROUP
  .text.SPI_BiDirectionalLineConfig
                 0x0000000008000620       0x40 lib/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_spi.o
                 0x0000000008000620                SPI_BiDirectionalLineConfig
- .text.SPI_I2S_ReceiveData
-                0x0000000008000660       0x1c lib/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_spi.o
-                0x0000000008000660                SPI_I2S_ReceiveData
  .text.SPI_I2S_SendData
-                0x000000000800067c       0x1c lib/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_spi.o
-                0x000000000800067c                SPI_I2S_SendData
+                0x0000000008000660       0x1c lib/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_spi.o
+                0x0000000008000660                SPI_I2S_SendData
  .text.SPI_I2S_GetFlagStatus
-                0x0000000008000698       0x38 lib/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_spi.o
-                0x0000000008000698                SPI_I2S_GetFlagStatus
+                0x000000000800067c       0x38 lib/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_spi.o
+                0x000000000800067c                SPI_I2S_GetFlagStatus
  .text.SystemInit
-                0x00000000080006d0       0x58 common/src/system_stm32f4xx.o
-                0x00000000080006d0                SystemInit
+                0x00000000080006b4       0x58 common/src/system_stm32f4xx.o
+                0x00000000080006b4                SystemInit
  .text.SystemCoreClockUpdate
-                0x0000000008000728       0xf8 common/src/system_stm32f4xx.o
-                0x0000000008000728                SystemCoreClockUpdate
+                0x000000000800070c       0xf8 common/src/system_stm32f4xx.o
+                0x000000000800070c                SystemCoreClockUpdate
  .text.SetSysClock
-                0x0000000008000820       0xf4 common/src/system_stm32f4xx.o
+                0x0000000008000804       0xf4 common/src/system_stm32f4xx.o
  .text.Reset_Handler
-                0x0000000008000914       0x44 common/src/startup_stm32f40_41xxx.o
-                0x0000000008000914                Reset_Handler
+                0x00000000080008f8       0x44 common/src/startup_stm32f40_41xxx.o
+                0x00000000080008f8                Reset_Handler
  .text.Default_Handler
-                0x0000000008000958        0x2 common/src/startup_stm32f40_41xxx.o
-                0x0000000008000958                RTC_Alarm_IRQHandler
-                0x0000000008000958                HASH_RNG_IRQHandler
-                0x0000000008000958                EXTI2_IRQHandler
-                0x0000000008000958                TIM8_CC_IRQHandler
-                0x0000000008000958                DebugMon_Handler
-                0x0000000008000958                TIM1_CC_IRQHandler
-                0x0000000008000958                DMA2_Stream5_IRQHandler
-                0x0000000008000958                HardFault_Handler
-                0x0000000008000958                DMA1_Stream5_IRQHandler
-                0x0000000008000958                PVD_IRQHandler
-                0x0000000008000958                SDIO_IRQHandler
-                0x0000000008000958                TAMP_STAMP_IRQHandler
-                0x0000000008000958                PendSV_Handler
-                0x0000000008000958                NMI_Handler
-                0x0000000008000958                CAN2_RX1_IRQHandler
-                0x0000000008000958                EXTI3_IRQHandler
-                0x0000000008000958                TIM8_TRG_COM_TIM14_IRQHandler
-                0x0000000008000958                TIM1_UP_TIM10_IRQHandler
-                0x0000000008000958                TIM8_UP_TIM13_IRQHandler
-                0x0000000008000958                I2C3_ER_IRQHandler
-                0x0000000008000958                EXTI0_IRQHandler
-                0x0000000008000958                I2C2_EV_IRQHandler
-                0x0000000008000958                DMA1_Stream2_IRQHandler
-                0x0000000008000958                CAN1_RX0_IRQHandler
-                0x0000000008000958                FPU_IRQHandler
-                0x0000000008000958                OTG_HS_WKUP_IRQHandler
-                0x0000000008000958                UsageFault_Handler
-                0x0000000008000958                CAN2_SCE_IRQHandler
-                0x0000000008000958                DMA2_Stream2_IRQHandler
-                0x0000000008000958                SPI1_IRQHandler
-                0x0000000008000958                TIM6_DAC_IRQHandler
-                0x0000000008000958                TIM1_BRK_TIM9_IRQHandler
-                0x0000000008000958                DCMI_IRQHandler
-                0x0000000008000958                CAN2_RX0_IRQHandler
-                0x0000000008000958                DMA2_Stream3_IRQHandler
-                0x0000000008000958                USART6_IRQHandler
-                0x0000000008000958                USART3_IRQHandler
-                0x0000000008000958                CRYP_IRQHandler
-                0x0000000008000958                CAN1_RX1_IRQHandler
-                0x0000000008000958                UART5_IRQHandler
-                0x0000000008000958                DMA2_Stream0_IRQHandler
-                0x0000000008000958                TIM4_IRQHandler
-                0x0000000008000958                I2C1_EV_IRQHandler
-                0x0000000008000958                DMA1_Stream6_IRQHandler
-                0x0000000008000958                DMA1_Stream1_IRQHandler
-                0x0000000008000958                UART4_IRQHandler
-                0x0000000008000958                TIM3_IRQHandler
-                0x0000000008000958                RCC_IRQHandler
-                0x0000000008000958                TIM8_BRK_TIM12_IRQHandler
-                0x0000000008000958                Default_Handler
-                0x0000000008000958                EXTI15_10_IRQHandler
-                0x0000000008000958                ADC_IRQHandler
-                0x0000000008000958                DMA1_Stream7_IRQHandler
-                0x0000000008000958                TIM7_IRQHandler
-                0x0000000008000958                CAN2_TX_IRQHandler
-                0x0000000008000958                TIM5_IRQHandler
-                0x0000000008000958                DMA2_Stream7_IRQHandler
-                0x0000000008000958                I2C3_EV_IRQHandler
-                0x0000000008000958                EXTI9_5_IRQHandler
-                0x0000000008000958                RTC_WKUP_IRQHandler
-                0x0000000008000958                ETH_WKUP_IRQHandler
-                0x0000000008000958                SPI2_IRQHandler
-                0x0000000008000958                OTG_HS_EP1_IN_IRQHandler
-                0x0000000008000958                MemManage_Handler
-                0x0000000008000958                DMA1_Stream0_IRQHandler
-                0x0000000008000958                CAN1_TX_IRQHandler
-                0x0000000008000958                SVC_Handler
-                0x0000000008000958                EXTI4_IRQHandler
-                0x0000000008000958                FSMC_IRQHandler
-                0x0000000008000958                ETH_IRQHandler
-                0x0000000008000958                OTG_HS_EP1_OUT_IRQHandler
-                0x0000000008000958                WWDG_IRQHandler
-                0x0000000008000958                TIM2_IRQHandler
-                0x0000000008000958                OTG_FS_WKUP_IRQHandler
-                0x0000000008000958                TIM1_TRG_COM_TIM11_IRQHandler
-                0x0000000008000958                OTG_HS_IRQHandler
-                0x0000000008000958                EXTI1_IRQHandler
-                0x0000000008000958                USART2_IRQHandler
-                0x0000000008000958                I2C2_ER_IRQHandler
-                0x0000000008000958                DMA2_Stream1_IRQHandler
-                0x0000000008000958                CAN1_SCE_IRQHandler
-                0x0000000008000958                FLASH_IRQHandler
-                0x0000000008000958                DMA2_Stream4_IRQHandler
-                0x0000000008000958                BusFault_Handler
-                0x0000000008000958                USART1_IRQHandler
-                0x0000000008000958                OTG_FS_IRQHandler
-                0x0000000008000958                SPI3_IRQHandler
-                0x0000000008000958                DMA1_Stream4_IRQHandler
-                0x0000000008000958                I2C1_ER_IRQHandler
-                0x0000000008000958                DMA2_Stream6_IRQHandler
-                0x0000000008000958                DMA1_Stream3_IRQHandler
- *fill*         0x000000000800095a        0x2 
+                0x000000000800093c        0x2 common/src/startup_stm32f40_41xxx.o
+                0x000000000800093c                RTC_Alarm_IRQHandler
+                0x000000000800093c                HASH_RNG_IRQHandler
+                0x000000000800093c                EXTI2_IRQHandler
+                0x000000000800093c                TIM8_CC_IRQHandler
+                0x000000000800093c                DebugMon_Handler
+                0x000000000800093c                TIM1_CC_IRQHandler
+                0x000000000800093c                DMA2_Stream5_IRQHandler
+                0x000000000800093c                HardFault_Handler
+                0x000000000800093c                DMA1_Stream5_IRQHandler
+                0x000000000800093c                PVD_IRQHandler
+                0x000000000800093c                SDIO_IRQHandler
+                0x000000000800093c                TAMP_STAMP_IRQHandler
+                0x000000000800093c                PendSV_Handler
+                0x000000000800093c                NMI_Handler
+                0x000000000800093c                CAN2_RX1_IRQHandler
+                0x000000000800093c                EXTI3_IRQHandler
+                0x000000000800093c                TIM8_TRG_COM_TIM14_IRQHandler
+                0x000000000800093c                TIM1_UP_TIM10_IRQHandler
+                0x000000000800093c                TIM8_UP_TIM13_IRQHandler
+                0x000000000800093c                I2C3_ER_IRQHandler
+                0x000000000800093c                EXTI0_IRQHandler
+                0x000000000800093c                I2C2_EV_IRQHandler
+                0x000000000800093c                DMA1_Stream2_IRQHandler
+                0x000000000800093c                CAN1_RX0_IRQHandler
+                0x000000000800093c                FPU_IRQHandler
+                0x000000000800093c                OTG_HS_WKUP_IRQHandler
+                0x000000000800093c                UsageFault_Handler
+                0x000000000800093c                CAN2_SCE_IRQHandler
+                0x000000000800093c                DMA2_Stream2_IRQHandler
+                0x000000000800093c                SPI1_IRQHandler
+                0x000000000800093c                TIM6_DAC_IRQHandler
+                0x000000000800093c                TIM1_BRK_TIM9_IRQHandler
+                0x000000000800093c                DCMI_IRQHandler
+                0x000000000800093c                CAN2_RX0_IRQHandler
+                0x000000000800093c                DMA2_Stream3_IRQHandler
+                0x000000000800093c                USART6_IRQHandler
+                0x000000000800093c                USART3_IRQHandler
+                0x000000000800093c                CRYP_IRQHandler
+                0x000000000800093c                CAN1_RX1_IRQHandler
+                0x000000000800093c                UART5_IRQHandler
+                0x000000000800093c                DMA2_Stream0_IRQHandler
+                0x000000000800093c                TIM4_IRQHandler
+                0x000000000800093c                I2C1_EV_IRQHandler
+                0x000000000800093c                DMA1_Stream6_IRQHandler
+                0x000000000800093c                DMA1_Stream1_IRQHandler
+                0x000000000800093c                UART4_IRQHandler
+                0x000000000800093c                TIM3_IRQHandler
+                0x000000000800093c                RCC_IRQHandler
+                0x000000000800093c                TIM8_BRK_TIM12_IRQHandler
+                0x000000000800093c                Default_Handler
+                0x000000000800093c                EXTI15_10_IRQHandler
+                0x000000000800093c                ADC_IRQHandler
+                0x000000000800093c                DMA1_Stream7_IRQHandler
+                0x000000000800093c                TIM7_IRQHandler
+                0x000000000800093c                CAN2_TX_IRQHandler
+                0x000000000800093c                TIM5_IRQHandler
+                0x000000000800093c                DMA2_Stream7_IRQHandler
+                0x000000000800093c                I2C3_EV_IRQHandler
+                0x000000000800093c                EXTI9_5_IRQHandler
+                0x000000000800093c                RTC_WKUP_IRQHandler
+                0x000000000800093c                ETH_WKUP_IRQHandler
+                0x000000000800093c                SPI2_IRQHandler
+                0x000000000800093c                OTG_HS_EP1_IN_IRQHandler
+                0x000000000800093c                MemManage_Handler
+                0x000000000800093c                DMA1_Stream0_IRQHandler
+                0x000000000800093c                CAN1_TX_IRQHandler
+                0x000000000800093c                SVC_Handler
+                0x000000000800093c                EXTI4_IRQHandler
+                0x000000000800093c                FSMC_IRQHandler
+                0x000000000800093c                ETH_IRQHandler
+                0x000000000800093c                OTG_HS_EP1_OUT_IRQHandler
+                0x000000000800093c                WWDG_IRQHandler
+                0x000000000800093c                TIM2_IRQHandler
+                0x000000000800093c                OTG_FS_WKUP_IRQHandler
+                0x000000000800093c                TIM1_TRG_COM_TIM11_IRQHandler
+                0x000000000800093c                OTG_HS_IRQHandler
+                0x000000000800093c                EXTI1_IRQHandler
+                0x000000000800093c                USART2_IRQHandler
+                0x000000000800093c                I2C2_ER_IRQHandler
+                0x000000000800093c                DMA2_Stream1_IRQHandler
+                0x000000000800093c                CAN1_SCE_IRQHandler
+                0x000000000800093c                FLASH_IRQHandler
+                0x000000000800093c                DMA2_Stream4_IRQHandler
+                0x000000000800093c                BusFault_Handler
+                0x000000000800093c                USART1_IRQHandler
+                0x000000000800093c                OTG_FS_IRQHandler
+                0x000000000800093c                SPI3_IRQHandler
+                0x000000000800093c                DMA1_Stream4_IRQHandler
+                0x000000000800093c                I2C1_ER_IRQHandler
+                0x000000000800093c                DMA2_Stream6_IRQHandler
+                0x000000000800093c                DMA1_Stream3_IRQHandler
+ *fill*         0x000000000800093e        0x2 
  .text.lcd_init
-                0x000000000800095c       0x90 src/lcd.o
-                0x000000000800095c                lcd_init
- .text.lcd_read
-                0x00000000080009ec       0x48 src/lcd.o
-                0x00000000080009ec                lcd_read
+                0x0000000008000940       0xac src/lcd.o
+                0x0000000008000940                lcd_init
  .text.lcd_write
-                0x0000000008000a34       0x4c src/lcd.o
-                0x0000000008000a34                lcd_write
+                0x00000000080009ec       0x4c src/lcd.o
+                0x00000000080009ec                lcd_write
  .text.lcd_wait_busy
-                0x0000000008000a80       0x24 src/lcd.o
-                0x0000000008000a80                lcd_wait_busy
+                0x0000000008000a38       0x30 src/lcd.o
+                0x0000000008000a38                lcd_wait_busy
  .text.gpio_init
-                0x0000000008000aa4       0x50 src/gpio.o
-                0x0000000008000aa4                gpio_init
+                0x0000000008000a68       0x50 src/gpio.o
+                0x0000000008000a68                gpio_init
  .text.gpio_set_debug_led
-                0x0000000008000af4       0x14 src/gpio.o
-                0x0000000008000af4                gpio_set_debug_led
+                0x0000000008000ab8       0x14 src/gpio.o
+                0x0000000008000ab8                gpio_set_debug_led
  .text.gpio_reset_debug_led
-                0x0000000008000b08       0x14 src/gpio.o
-                0x0000000008000b08                gpio_reset_debug_led
+                0x0000000008000acc       0x14 src/gpio.o
+                0x0000000008000acc                gpio_reset_debug_led
  .text.gpio_toggle_debug_led
-                0x0000000008000b1c       0x14 src/gpio.o
-                0x0000000008000b1c                gpio_toggle_debug_led
+                0x0000000008000ae0       0x14 src/gpio.o
+                0x0000000008000ae0                gpio_toggle_debug_led
  .text.NVIC_SetPriority
-                0x0000000008000b30       0x54 src/main.o
+                0x0000000008000af4       0x54 src/main.o
  .text.SysTick_Config
-                0x0000000008000b84       0x44 src/main.o
- .text.main     0x0000000008000bc8       0x68 src/main.o
-                0x0000000008000bc8                main
+                0x0000000008000b48       0x44 src/main.o
+ .text.main     0x0000000008000b8c       0x68 src/main.o
+                0x0000000008000b8c                main
  .text.SysTick_Handler
-                0x0000000008000c30       0x1c src/main.o
-                0x0000000008000c30                SysTick_Handler
+                0x0000000008000bf4       0x1c src/main.o
+                0x0000000008000bf4                SysTick_Handler
  .text.spi_init
-                0x0000000008000c4c       0xc0 src/spi.o
-                0x0000000008000c4c                spi_init
- .text.spi_tx   0x0000000008000d0c       0x4c src/spi.o
-                0x0000000008000d0c                spi_tx
- .text.spi_rx   0x0000000008000d58       0x44 src/spi.o
-                0x0000000008000d58                spi_rx
+                0x0000000008000c10       0xc0 src/spi.o
+                0x0000000008000c10                spi_init
+ .text.spi_tx   0x0000000008000cd0       0x60 src/spi.o
+                0x0000000008000cd0                spi_tx
  *(.glue_7)
- .glue_7        0x0000000008000d9c        0x0 linker stubs
+ .glue_7        0x0000000008000d30        0x0 linker stubs
  *(.glue_7t)
- .glue_7t       0x0000000008000d9c        0x0 linker stubs
+ .glue_7t       0x0000000008000d30        0x0 linker stubs
  *(.eh_frame)
  *(.init)
  *(.fini)
-                0x0000000008000d9c                . = ALIGN (0x4)
-                0x0000000008000d9c                _etext = .
+                0x0000000008000d30                . = ALIGN (0x4)
+                0x0000000008000d30                _etext = .
 
-.vfp11_veneer   0x0000000008000d9c        0x0
- .vfp11_veneer  0x0000000008000d9c        0x0 linker stubs
+.vfp11_veneer   0x0000000008000d30        0x0
+ .vfp11_veneer  0x0000000008000d30        0x0 linker stubs
 
-.v4_bx          0x0000000008000d9c        0x0
- .v4_bx         0x0000000008000d9c        0x0 linker stubs
+.v4_bx          0x0000000008000d30        0x0
+ .v4_bx         0x0000000008000d30        0x0 linker stubs
 
-.iplt           0x0000000008000d9c        0x0
- .iplt          0x0000000008000d9c        0x0 lib/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_flash.o
+.iplt           0x0000000008000d30        0x0
+ .iplt          0x0000000008000d30        0x0 lib/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_flash.o
 
-.rel.dyn        0x0000000008000d9c        0x0
- .rel.iplt      0x0000000008000d9c        0x0 lib/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_flash.o
+.rel.dyn        0x0000000008000d30        0x0
+ .rel.iplt      0x0000000008000d30        0x0 lib/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_flash.o
 
-.rodata         0x0000000008000d9c        0x0
-                0x0000000008000d9c                . = ALIGN (0x4)
+.rodata         0x0000000008000d30        0x0
+                0x0000000008000d30                . = ALIGN (0x4)
  *(.rodata)
  *(.rodata*)
-                0x0000000008000d9c                . = ALIGN (0x4)
+                0x0000000008000d30                . = ALIGN (0x4)
 
 .ARM.extab
  *(.ARM.extab* .gnu.linkonce.armextab.*)
 
-.ARM            0x0000000008000d9c        0x0
-                0x0000000008000d9c                __exidx_start = .
+.ARM            0x0000000008000d30        0x0
+                0x0000000008000d30                __exidx_start = .
  *(.ARM.exidx*)
-                0x0000000008000d9c                __exidx_end = .
+                0x0000000008000d30                __exidx_end = .
 
-.preinit_array  0x0000000008000d9c        0x0
+.preinit_array  0x0000000008000d30        0x0
                 [!provide]                        PROVIDE (__preinit_array_start, .)
  *(.preinit_array*)
                 [!provide]                        PROVIDE (__preinit_array_end, .)
 
-.init_array     0x0000000008000d9c        0x0
+.init_array     0x0000000008000d30        0x0
                 [!provide]                        PROVIDE (__init_array_start, .)
  *(SORT(.init_array.*))
  *(.init_array*)
                 [!provide]                        PROVIDE (__init_array_end, .)
 
-.fini_array     0x0000000008000d9c        0x0
+.fini_array     0x0000000008000d30        0x0
                 [!provide]                        PROVIDE (__fini_array_start, .)
  *(SORT(.fini_array.*))
  *(.fini_array*)
                 [!provide]                        PROVIDE (__fini_array_end, .)
-                0x0000000008000d9c                _sidata = LOADADDR (.data)
+                0x0000000008000d30                _sidata = LOADADDR (.data)
 
-.data           0x0000000020000000       0x14 load address 0x0000000008000d9c
+.data           0x0000000020000000       0x14 load address 0x0000000008000d30
                 0x0000000020000000                . = ALIGN (0x4)
                 0x0000000020000000                _sdata = .
  *(.data)
@@ -5562,12 +5559,12 @@ END GROUP
                 0x0000000020000004                AHBPrescTable
                 0x0000000020000014                . = ALIGN (0x4)
                 0x0000000020000014                _edata = .
-                0x0000000008000db0                _siccmram = LOADADDR (.ccmram)
+                0x0000000008000d44                _siccmram = LOADADDR (.ccmram)
 
-.igot.plt       0x0000000020000014        0x0 load address 0x0000000008000db0
+.igot.plt       0x0000000020000014        0x0 load address 0x0000000008000d44
  .igot.plt      0x0000000020000014        0x0 lib/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_flash.o
 
-.ccmram         0x0000000010000000        0x0 load address 0x0000000008000db0
+.ccmram         0x0000000010000000        0x0 load address 0x0000000008000d44
                 0x0000000010000000                . = ALIGN (0x4)
                 0x0000000010000000                _sccmram = .
  *(.ccmram)
@@ -5630,27 +5627,27 @@ END GROUP
                 0x0000000000000186       0x33 src/spi.o
 OUTPUT(lcd.elf elf32-littlearm)
 
-.debug_info     0x0000000000000000     0x35d1
+.debug_info     0x0000000000000000     0x35ab
  .debug_info    0x0000000000000000      0x60d lib/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_gpio.o
  .debug_info    0x000000000000060d      0xe4a lib/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rcc.o
  .debug_info    0x0000000000001457      0xb43 lib/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_spi.o
  .debug_info    0x0000000000001f9a      0x5de common/src/system_stm32f4xx.o
  .debug_info    0x0000000000002578       0x63 common/src/startup_stm32f40_41xxx.o
- .debug_info    0x00000000000025db      0x195 src/lcd.o
- .debug_info    0x0000000000002770      0x2dc src/gpio.o
- .debug_info    0x0000000000002a4c      0x6d8 src/main.o
- .debug_info    0x0000000000003124      0x4ad src/spi.o
+ .debug_info    0x00000000000025db      0x16f src/lcd.o
+ .debug_info    0x000000000000274a      0x2dc src/gpio.o
+ .debug_info    0x0000000000002a26      0x6d8 src/main.o
+ .debug_info    0x00000000000030fe      0x4ad src/spi.o
 
-.debug_abbrev   0x0000000000000000      0xab5
+.debug_abbrev   0x0000000000000000      0xae5
  .debug_abbrev  0x0000000000000000      0x1a8 lib/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_gpio.o
  .debug_abbrev  0x00000000000001a8      0x1bf lib/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rcc.o
  .debug_abbrev  0x0000000000000367      0x16c lib/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_spi.o
  .debug_abbrev  0x00000000000004d3      0x13b common/src/system_stm32f4xx.o
  .debug_abbrev  0x000000000000060e       0x12 common/src/startup_stm32f40_41xxx.o
- .debug_abbrev  0x0000000000000620       0xae src/lcd.o
- .debug_abbrev  0x00000000000006ce      0x11c src/gpio.o
- .debug_abbrev  0x00000000000007ea      0x184 src/main.o
- .debug_abbrev  0x000000000000096e      0x147 src/spi.o
+ .debug_abbrev  0x0000000000000620       0xde src/lcd.o
+ .debug_abbrev  0x00000000000006fe      0x11c src/gpio.o
+ .debug_abbrev  0x000000000000081a      0x184 src/main.o
+ .debug_abbrev  0x000000000000099e      0x147 src/spi.o
 
 .debug_aranges  0x0000000000000000      0x458
  .debug_aranges
@@ -5696,16 +5693,16 @@ OUTPUT(lcd.elf elf32-littlearm)
  .debug_macro   0x000000000000179f      0x1bb src/main.o
  .debug_macro   0x000000000000195a      0x203 src/spi.o
 
-.debug_line     0x0000000000000000     0x2648
+.debug_line     0x0000000000000000     0x265b
  .debug_line    0x0000000000000000      0x52c lib/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_gpio.o
  .debug_line    0x000000000000052c      0x842 lib/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rcc.o
  .debug_line    0x0000000000000d6e      0x641 lib/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_spi.o
  .debug_line    0x00000000000013af      0x44d common/src/system_stm32f4xx.o
  .debug_line    0x00000000000017fc       0x7f common/src/startup_stm32f40_41xxx.o
- .debug_line    0x000000000000187b      0x191 src/lcd.o
- .debug_line    0x0000000000001a0c      0x3fe src/gpio.o
- .debug_line    0x0000000000001e0a      0x425 src/main.o
- .debug_line    0x000000000000222f      0x419 src/spi.o
+ .debug_line    0x000000000000187b      0x1a0 src/lcd.o
+ .debug_line    0x0000000000001a1b      0x3fe src/gpio.o
+ .debug_line    0x0000000000001e19      0x425 src/main.o
+ .debug_line    0x000000000000223e      0x41d src/spi.o
 
 .debug_str      0x0000000000000000    0x608cd
  .debug_str     0x0000000000000000    0x5eb02 lib/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_gpio.o
@@ -5736,12 +5733,12 @@ OUTPUT(lcd.elf elf32-littlearm)
  .comment       0x0000000000000038       0x39 src/main.o
  .comment       0x0000000000000038       0x39 src/spi.o
 
-.debug_frame    0x0000000000000000     0x1120
+.debug_frame    0x0000000000000000     0x1118
  .debug_frame   0x0000000000000000      0x23c lib/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_gpio.o
  .debug_frame   0x000000000000023c      0x83c lib/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rcc.o
  .debug_frame   0x0000000000000a78      0x3f4 lib/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_spi.o
  .debug_frame   0x0000000000000e6c       0x7c common/src/system_stm32f4xx.o
- .debug_frame   0x0000000000000ee8       0x9c src/lcd.o
- .debug_frame   0x0000000000000f84       0x88 src/gpio.o
- .debug_frame   0x000000000000100c       0x98 src/main.o
- .debug_frame   0x00000000000010a4       0x7c src/spi.o
+ .debug_frame   0x0000000000000ee8       0x94 src/lcd.o
+ .debug_frame   0x0000000000000f7c       0x88 src/gpio.o
+ .debug_frame   0x0000000000001004       0x98 src/main.o
+ .debug_frame   0x000000000000109c       0x7c src/spi.o
