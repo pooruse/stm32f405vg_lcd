@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 void spi_init(void);
-void spi_tx_rx(uint8_t *tx, uint32_t *rx, uint32_t size);
-    
+void spi_tx(uint8_t dat);
+uint8_t spi_rx(void);
+
 #endif

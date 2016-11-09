@@ -1,17 +1,20 @@
 #include "stm32f4xx.h"
 #include "gpio.h"
-#include "spi.h"
+#include "lcd.h"
 
 
 void SysTick_Handler(void);
 int tick = 0;
 
+int delay;
 int main(void){
 
     SystemCoreClockUpdate();
+
+    for(delay = 0; delay < 4000000; delay++); // delay for lcd test
     
     gpio_init();
-    spi_init();
+    lcd_init();
     
     SysTick_Config(SystemCoreClock/1000);
     
