@@ -64,11 +64,11 @@
 #define GRAPHIC_RAM_ADDR 0x80
 #define GRAPHIC_RAM_ADDR_MASK 0x7F
 
-static uint8_t lcd_read(uint8_t command);
 
-static void one_byte_write(uint32_t data);
-static void two_byte_write(uint32_t data, uint8_t byte2);
+static void lcd_graphic_clear(void);
 
+static uint8_t read(uint8_t command);
+static void write(uint32_t data);
 static void wait_busy(void);
 static void send_sync(uint8_t cmd);
 static void send_byte(uint8_t data);
@@ -77,49 +77,41 @@ int delay;
 
 void lcd_init(void){
 
-    int sel;
-    uint32_t dat;
-    uint8_t u8dat;
+    
     spi_init();
 
-    /*
-    one_byte_write(FUNCTION | FUNCTION_DL);
+    write(FUNCTION | FUNCTION_DL);
     wait_busy();
-    one_byte_write(FUNCTION | FUNCTION_DL);
-    wait_busy();
-
-    one_byte_write(DISPLAY | DISPLAY_D | DISPLAY_C | DISPLAY_B);
+    write(FUNCTION | FUNCTION_DL);
     wait_busy();
 
-    one_byte_write(CLEAR);
+    write(DISPLAY | DISPLAY_D);
+    wait_busy();
+
+    write(CLEAR);
     for(delay=0;delay<200000;delay++);
 
-    one_byte_write(ENTRY | ENTRY_S);
+    write(HOME);
     wait_busy();
 
-    one_byte_write(HOME);
+    write(CURSOR | CURSOR_RL);
+    wait_busy();
+    write(DDRAM);
     wait_busy();
 
-    one_byte_write(CURSOR | CURSOR_RL);
-    one_byte_write(DDRAM);
+    write(ENTRY | ENTRY_ID);
+
+    lcd_graphic_clear();
+    write(DDRAM);
+    wait_busy();
+    write(WRITE | 0x30);
+    wait_busy();
     
-    */
-    sel = 0;
-    dat = 0;
-    u8dat = 0;
-    while(1){
-	gpio_toggle_debug_led();
-	switch(sel){
-	case 0:
-	    one_byte_write(dat);
-	    break;
-	case 1:
-	    two_byte_write(dat, u8dat);
-	    break;
-	default:
-	    break;
-	}
-    }
+
+}
+
+static void lcd_graphic_clear(void){
+   
 }
 
 /** @brief LCD instruction bit composition
@@ -131,7 +123,7 @@ void lcd_init(void){
  *  page 26 Timming Diagram of Serial Mode Data Transfer
  */
 
-static uint8_t lcd_read(uint8_t command){
+static uint8_t read(uint8_t command){
     
     uint8_t cmd,high_byte,low_byte;
 
@@ -145,7 +137,7 @@ static uint8_t lcd_read(uint8_t command){
     return (high_byte & 0xF0) | ( (0xF0 & low_byte) >> 4);
 }
 
-static void one_byte_write(uint32_t data){
+static void write(uint32_t data){
     
     uint8_t cmd;
     uint8_t payload;
@@ -157,21 +149,6 @@ static void one_byte_write(uint32_t data){
     spi_cs(1);
     send_sync(cmd);
     send_byte(payload);
-    spi_cs(0);
-}
-
-static void two_byte_write(uint32_t data, uint8_t byte2){
-
-    uint8_t cmd;
-    uint8_t payload;
-
-    cmd = (uint8_t)(data >> 8);
-    payload = (uint8_t)data;
-    
-    spi_cs(1);
-    send_sync(cmd);
-    send_byte(payload);
-    send_byte(byte2);
     spi_cs(0);
 }
 
@@ -187,7 +164,7 @@ static void wait_busy(){
     
 #else
     
-    for(delay = 0; delay < 1500; delay++);
+    for(delay = 0; delay < 2000; delay++);
 #endif
     
 }
