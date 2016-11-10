@@ -1,6 +1,6 @@
 #include "stm32f4xx.h"
 #include "gpio.h"
-#include "lcd.h"
+#include "st7920.h"
 
 
 void SysTick_Handler(void);
