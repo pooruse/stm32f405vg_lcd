@@ -6,5 +6,6 @@
 void spi_init(void);
 void spi_tx(uint8_t dat);
 uint8_t spi_rx(void);
+void spi_cs(uint32_t state);
 
 #endif

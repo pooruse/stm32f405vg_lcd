@@ -29,11 +29,11 @@
 #define DDRAM 0x80
 #define DDRAM_ADDR_MASK 0x7F
 
-#define READ_BUSY_ADDR 0x100
+#define READ_BUSY_ADDR 0x200
 #define READ_BUSY_MASK 0x80
 #define READ_ADDR 0x3F
 
-#define WRITE 0x200
+#define WRITE 0x100
 #define WRITE_MASK 0xFF
 
 #define READ_DATA 0x300
@@ -77,11 +77,12 @@ int delay;
 
 void lcd_init(void){
 
-    uint8_t addr;
-    uint8_t dat;
-    
+    int sel;
+    uint32_t dat;
+    uint8_t u8dat;
     spi_init();
 
+    /*
     one_byte_write(FUNCTION | FUNCTION_DL);
     wait_busy();
     one_byte_write(FUNCTION | FUNCTION_DL);
@@ -102,19 +103,22 @@ void lcd_init(void){
     one_byte_write(CURSOR | CURSOR_RL);
     one_byte_write(DDRAM);
     
-    dat = 1;
-    addr = 0;
-
+    */
+    sel = 0;
+    dat = 0;
+    u8dat = 0;
     while(1){
-	for(delay = 0; delay < 1000000; delay++);
 	gpio_toggle_debug_led();
-	//two_byte_write(WRITE | 0x00, dat);
-	one_byte_write(WRITE | 0x0);
-	wait_busy();
-	one_byte_write(WRITE | 0x30);
-	wait_busy();
-	addr++;
-	dat++;
+	switch(sel){
+	case 0:
+	    one_byte_write(dat);
+	    break;
+	case 1:
+	    two_byte_write(dat, u8dat);
+	    break;
+	default:
+	    break;
+	}
     }
 }
 
@@ -146,16 +150,29 @@ static void one_byte_write(uint32_t data){
     uint8_t cmd;
     uint8_t payload;
 
+    
     cmd = (uint8_t)(data >> 8);
     payload = (uint8_t)data;
-    
+
+    spi_cs(1);
     send_sync(cmd);
     send_byte(payload);
+    spi_cs(0);
 }
 
 static void two_byte_write(uint32_t data, uint8_t byte2){
-    one_byte_write(data);
+
+    uint8_t cmd;
+    uint8_t payload;
+
+    cmd = (uint8_t)(data >> 8);
+    payload = (uint8_t)data;
+    
+    spi_cs(1);
+    send_sync(cmd);
+    send_byte(payload);
     send_byte(byte2);
+    spi_cs(0);
 }
 
 static void wait_busy(){
