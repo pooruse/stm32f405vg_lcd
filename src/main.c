@@ -6,8 +6,8 @@
 
 void SysTick_Handler(void);
 int tick = 0;
-
 int delay;
+
 int main(void){
 
     SystemCoreClockUpdate();
@@ -22,7 +22,16 @@ int main(void){
     setvbuf(stdin, NULL, _IONBF, 0);
     setvbuf(stdout, NULL, _IONBF, 0);
     setvbuf(stderr, NULL, _IONBF, 0);
-    printf("test");
+    
+    lcd_set_font_addr(0,1);
+    printf("abcdeabcdeabcdeab\n\r");
+    printf("number: %d\n\r", 535);
+    printf("Hex: %X\n\r", 15);
+    printf("Float: %d.%d\n\r", 15,1234);
+    printf("end ");
+    printf("end ");
+    printf("end \n\r");
+    //printf("float: %f",0.1234);
     
     SysTick_Config(SystemCoreClock/1000);
     

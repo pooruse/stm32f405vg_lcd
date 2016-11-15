@@ -16,9 +16,13 @@ OBJCOPY := $(PREFIX)objcopy
 
 CFLAGS +=-DSTM32F40_41xxx
 CFLAGS += -DUSE_STDPERIPH_DRIVER
+CFLAGS += -D__FPU_PRESENT=1
+CFLAGS += -D__FPU_USED=1
 #CFLAGS += -Os
-CFLAGS += -mcpu=cortex-m4
 CFLAGS += -mthumb
+CFLAGS += -mcpu=cortex-m4
+CFLAGS += -mfloat-abi=hard
+CFLAGS += -mfpu=fpv4-sp-d16
 CFLAGS += -ffunction-sections
 CFLAGS += -MD
 CFLAGS += -fdata-sections
@@ -41,12 +45,14 @@ LDFLAGS += -Wl,-Map=$(MAPFILE)
 LDFLAGS += -Wl,--gc-sections
 LDFLAGS += -mthumb
 LDFLAGS += -mcpu=cortex-m4
+LDFLAGS += -mfpu=fpv4-sp-d16 
+LDFLAGS += -mfloat-abi=hard
 LDFLAGS += -Wl,--start-group
-LDFLAGS += -lc
+#LDFLAGS += -lc
 LDFLAGS += -lgcc
 #LDFLAGS += -lnosys
 LDFLAGS += -Wl,--end-group
-
+LDFLAGS += -Wl,-u -Wl,_printf_float
 STDLIB_SRC =lib/STM32F4xx_StdPeriph_Driver/src
 STARTUP_SRC =common/src
 APP_SRC =src

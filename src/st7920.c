@@ -4,8 +4,9 @@
 #include "stdio.h"
 #include "font.h"
 
-#define SHIFT_TEST
+//#define SHIFT_TEST
 
+#define SCREEN_BUF_SIZE 1024 // 128 x 64 bit = 1024 byte
 static void copy_array_with_shift(
     uint8_t *src,
     uint8_t *dst,
@@ -22,7 +23,7 @@ static void wait_busy(void);
 static void send_sync(uint8_t cmd);
 static void send_byte(uint8_t data);
 
-static uint8_t screen_buf[1024]; // 128 x 64 bit = 1024 byte
+static uint8_t screen_buf[SCREEN_BUF_SIZE]; 
 
 static int delay;
 static int font_x = 0, font_y = 0;
@@ -50,8 +51,8 @@ void st7920_init(void){
 
     #ifdef SHIFT_TEST
     {
-	int head = 3;
-	int tail = 3;
+	int head = 8;
+	int tail = 8;
 	uint8_t src[5] = {
 	    0x10, 0x18, 0xF8, 0xFF, 0xFF
 	};
@@ -60,7 +61,7 @@ void st7920_init(void){
 	};
 
 	uint8_t expect[6] = {
-	    0xE2, 0x03, 0x1F, 0x1F, 0xFF, 0xEF
+	    0xF0, 0x10, 0x18, 0xF8, 0xFF, 0xFF
 	};
 
 	int i;
@@ -309,7 +310,7 @@ void lcd_draw_rectangle(struct st7920_draw_rectangle_t draw)
     int head_shift, end_part_len;
 
     uint8_t *buf;
-    int j;
+    int j,k;
 
     draw_parameter_modify(&draw);
     
@@ -339,13 +340,16 @@ void lcd_draw_rectangle(struct st7920_draw_rectangle_t draw)
     }
 
     // copy graphic to screen_buf
+    k = 0;
     for(j = y; j < (h + y); j++){
 	copy_array_with_shift(
-	    &buf[(wb - 1) * j],
+	    &buf[k],
 	    &screen_buf[16 * j + xb],
 	    (wb - 1),
 	    head_shift,
 	    end_part_len);
+
+	k += wb - 1;
     }
     
     draw_rectangle(xb, y, wb, h);
@@ -383,6 +387,7 @@ static void lcd_draw_font(int f)
 void lcd_putc(char c){
 
     int a = 0;
+    
     // numbers
     if(c >= '0' && c <= '9'){
 	a = (int)c;
@@ -402,13 +407,62 @@ void lcd_putc(char c){
 	a -= (int)'A';
 	a += 10;
     }
+    
+    // return
+    else if(c == '\r'){
+	font_x = 0;
+    }
+    
+    // new line
+    else if(c == '\n'){
+	font_y++;
+	if(font_y >= 8){
+	    font_y = 0;
+	}
+    }
 
+    // space
+    else if(c == ' '){
+	a = 62;
+    }
+
+    // ?
+    else if(c == '?'){
+	a = 63;
+    }
+
+    // :
+    else if(c == ':'){
+	a = 64;
+    }
+
+    // .
+    else if(c == '.'){
+	a = 65;
+    }
+
+    // %
+    else if(c == '%'){
+	a = 66;
+    }
+
+    // /
+    else if(c == '/'){
+	a = 67;
+    }
+
+    // -
+    else if(c == '-'){
+	a = 68;
+    }
+    
     if(a != 0){
 	lcd_draw_font(a);
     }
 }
 
 void lcd_clear(void){
+
     int i,j;
     for(i = 0; i < 32; i++){
 	set_addr(0, i);
@@ -416,6 +470,12 @@ void lcd_clear(void){
 	    write(WRITE | 0x00);
 	}
     }
+    
+    for(i = 0; i < SCREEN_BUF_SIZE; i++){
+	screen_buf[i] = 0;
+    }
+
+
 }
 
 static void set_addr(int x, int y){
