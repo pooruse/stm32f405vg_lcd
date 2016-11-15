@@ -44,7 +44,7 @@ LDFLAGS += -mcpu=cortex-m4
 LDFLAGS += -Wl,--start-group
 LDFLAGS += -lc
 LDFLAGS += -lgcc
-LDFLAGS += -lnosys
+#LDFLAGS += -lnosys
 LDFLAGS += -Wl,--end-group
 
 STDLIB_SRC =lib/STM32F4xx_StdPeriph_Driver/src

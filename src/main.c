@@ -18,6 +18,10 @@ int main(void){
     st7920_init();
     
     lcd_clear();
+
+    setvbuf(stdin, NULL, _IONBF, 0);
+    setvbuf(stdout, NULL, _IONBF, 0);
+    setvbuf(stderr, NULL, _IONBF, 0);
     printf("test");
     
     SysTick_Config(SystemCoreClock/1000);

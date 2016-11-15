@@ -15,7 +15,6 @@ static void copy_array_with_shift(
 
 static void set_addr(int x, int y);
 static void lcd_draw_font(int f);
-static void lcd_putc(char c);
 
 //static uint8_t read(uint8_t command);
 static void write(uint32_t data);
@@ -27,17 +26,6 @@ static uint8_t screen_buf[1024]; // 128 x 64 bit = 1024 byte
 
 static int delay;
 static int font_x = 0, font_y = 0;
-
-struct __FILE {
-    int dummy;
-};
-
-FILE __stdout;
-
-int fputc(int ch, FILE *f){
-    lcd_putc((char)ch);
-    return ch;
-}
 
 void st7920_init(void){
 
@@ -235,6 +223,7 @@ static void copy_array_with_shift(
     
     uint8_t msb, lsb;
     uint8_t mask;
+    uint8_t tmp;
     int i;
 
     if(size >= 16){
@@ -253,9 +242,10 @@ static void copy_array_with_shift(
     mask = (1 << (8 - tail_shift)) - 1;
 
     // end byte
-    dst[size] = dst[size];
     dst[size] &= mask;
-    dst[size] |= (src[size - 1] << (8 - tail_shift));
+    tmp = (src[size - 1] << (8 - head_shift));
+    tmp &= ~mask;
+    dst[size] |= tmp;
 
     // middle bytes
     for(i = 1; i < size; i++){	
@@ -331,6 +321,11 @@ void lcd_draw_rectangle(struct st7920_draw_rectangle_t draw)
     xb = x/8;
     wb = w/8;
 
+    if(wb == 0){
+	// special case
+	wb = 1;
+    }
+    
     if( (wb * h) > draw.size){
 	return;
     }
@@ -369,9 +364,10 @@ static void lcd_draw_font(int f)
     draw.y = font_y * 8;
     draw.w = 5;
     draw.h = 7;
-    draw.buf = (uint8_t *)&font[f];
+    draw.buf = (uint8_t *)&font[f * 8];
     draw.size = 8;
 
+    font_x++;
     if(font_x >= 21){
 	font_x = 0;
 	font_y++;
@@ -384,7 +380,7 @@ static void lcd_draw_font(int f)
     lcd_draw_rectangle(draw);
 }
 
-static void lcd_putc(char c){
+void lcd_putc(char c){
 
     int a = 0;
     // numbers
@@ -397,12 +393,14 @@ static void lcd_putc(char c){
     else if(c >= 'a' && c <= 'z'){
 	a = (int)c;
 	a -= (int)'a';
+	a += 36;
     }
 
     // A ~ Z
     else if(c >= 'A' && c <= 'Z'){
 	a = (int)c;
 	a -= (int)'A';
+	a += 10;
     }
 
     if(a != 0){
