@@ -14,7 +14,7 @@ int main(void){
     for(delay = 0; delay < 4000000; delay++); // delay for lcd test
     
     gpio_init();
-    lcd_init();
+    st7920_init();
     
     SysTick_Config(SystemCoreClock/1000);
     

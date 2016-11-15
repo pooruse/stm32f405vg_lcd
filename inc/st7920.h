@@ -63,8 +63,21 @@
 #define GRAPHIC_RAM_ADDR 0x80
 #define GRAPHIC_RAM_ADDR_MASK 0x7F
 
+#include <stdint.h>
+
+
+struct st7920_draw_rectangle_t
+{
+    uint8_t *buf; 
+    int size; // buffer byte size
+    int x; // range: 0~128
+    int y; // range: 0~64
+    int w; // width range: 1~128
+    int h; // height 1~64
+};
+
 void st7920_init(void);
-void st7920_write(uint32_t data);
+void lcd_draw_rectangle(struct st7920_draw_rectangle_t draw);
 
 #endif
 
