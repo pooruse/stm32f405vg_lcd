@@ -47,12 +47,13 @@ LDFLAGS += -mthumb
 LDFLAGS += -mcpu=cortex-m4
 LDFLAGS += -mfpu=fpv4-sp-d16 
 LDFLAGS += -mfloat-abi=hard
-LDFLAGS += -Wl,--start-group
+#LDFLAGS += -Wl,--start-group
 #LDFLAGS += -lc
-LDFLAGS += -lgcc
+#LDFLAGS += -lgcc
 #LDFLAGS += -lnosys
-LDFLAGS += -Wl,--end-group
-LDFLAGS += -Wl,-u -Wl,_printf_float
+#LDFLAGS += -lm
+#LDFLAGS += -Wl,--end-group
+#LDFLAGS += -Wl,-u -Wl,_printf_float
 STDLIB_SRC =lib/STM32F4xx_StdPeriph_Driver/src
 STARTUP_SRC =common/src
 APP_SRC =src

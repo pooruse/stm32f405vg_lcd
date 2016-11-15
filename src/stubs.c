@@ -12,6 +12,8 @@
 
 extern int errno;
 
+static char dummy_heap[16];
+
 int _close(int file);
 int _fstat(int file, struct stat *st);
 int _isatty(int file);
@@ -45,7 +47,7 @@ int _lseek(int file, int ptr, int dir) {
     return 0;
 }
 caddr_t _sbrk(int incr) {
-    return NULL;
+    return (caddr_t)dummy_heap;
 }
 
 int _read(int file, char *ptr, int len) {
