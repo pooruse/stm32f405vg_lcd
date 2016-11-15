@@ -111,20 +111,18 @@ static void _draw_rectangle(int xh, int y, int wh, int h)
     int i ,j;
 
     for(j = y; j < (y + h); j++){
-	for(i = xh; i < (xh + wh); i++){
-	    
-	    // if y > 31
-	    if(y & 0x20){
-		tmpxh = i | 0x8;
-		tmpy = j & 0x1F;
-	    } else {
-		tmpxh = i;
-		tmpy = j;
-	    }
-	    
-	    set_addr(tmpxh, tmpy);
-	    write(WRITE | screen_buf[j*16 + i * 2]);
-	    write(WRITE | screen_buf[j*16 + i * 2 + 1]);
+	// if y > 31
+	if(y & 0x20){
+	    tmpxh = xh | 0x8;
+	    tmpy = j & 0x1F;
+	} else {
+	    tmpxh = xh;
+	    tmpy = j;
+	}
+	set_addr(tmpxh, tmpy);  
+	for(i = xh; i < (xh + wh); i++){	    
+	    write(WRITE | screen_buf[j * 16 + i * 2]);
+	    write(WRITE | screen_buf[j * 16 + i * 2 + 1]);
 	}
     }
 }
@@ -476,6 +474,27 @@ void lcd_clear(void){
     }
 
 
+}
+
+
+void lcd_bar_set(int value){
+    static int percentage = 0;
+    if(value != percentage){
+	if(value > percentage){
+
+	} else if (value < percentage){
+
+	}
+    }
+}
+
+void lcd_bar_create(void){
+    int i;
+    for(i = 0; i < 256; i++){
+	screen_buf[ i] = 0;
+    }
+    
+    draw_rectangle(0, 0 ,16 , 64);
 }
 
 static void set_addr(int x, int y){
