@@ -213,6 +213,11 @@ static void draw_parameter_modify(struct st7920_draw_rectangle_t *draw){
     }
 }
 
+
+/** @brief copy_array_with_shift
+ *    only support 1 byte shift   
+ *
+ */
 static void copy_array_with_shift(
     uint8_t *src,
     uint8_t *dst,
@@ -476,19 +481,47 @@ void lcd_clear(void){
 
 }
 
-
+#define BAR_START 3 * 8 * 16
 void lcd_bar_set(int value){
     static int percentage = 0;
+    struct st7920_draw_rectangle_t draw;
+    uint8_t buf[16];
+    int i;
+    
     if(value != percentage){
 	if(value > percentage){
+	    
+	    memset(buf, 0xFF, 16);
+	    draw.buf = buf;
 
+	    for(i = 0; i < 14; i++){
+		draw.x = 13 + percentage;
+		draw.y = 25 + i;
+		draw.w = value - percentage;
+		draw.h = 1;
+		draw.size = 16;
+		lcd_draw_rectangle(draw);
+	    }
+	    percentage = value;
+	    
 	} else if (value < percentage){
-
+	    
+	    memset(buf, 0, 16);
+	    draw.buf = buf;
+	    
+	    for(i = 0; i < 14; i++){
+		draw.x = 13 + percentage - value;
+		draw.y = 25 + i;
+		draw.w = percentage - value;
+		draw.h = 1;
+		draw.size = 16;
+		lcd_draw_rectangle(draw);
+	    }
 	}
     }
 }
 
-#define BAR_START 3 * 8 * 16
+
 void lcd_bar_create(void){
     int i,j;
     for(i = 0; i < 256; i++){
