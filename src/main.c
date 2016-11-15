@@ -33,7 +33,7 @@ int main(void){
     printf("hard float: %1.2f\n\r",0.1234);
     printf("float: %1.2f\n\r",1.55);
 
-    //lcd_bar_create();
+    lcd_bar_create();
     
     SysTick_Config(SystemCoreClock/1000);
     

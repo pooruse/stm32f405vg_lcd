@@ -112,7 +112,7 @@ static void _draw_rectangle(int xh, int y, int wh, int h)
 
     for(j = y; j < (y + h); j++){
 	// if y > 31
-	if(y & 0x20){
+	if(j & 0x20){
 	    tmpxh = xh | 0x8;
 	    tmpy = j & 0x1F;
 	} else {
@@ -468,7 +468,7 @@ void lcd_clear(void){
 	    write(WRITE | 0x00);
 	}
     }
-    
+
     for(i = 0; i < SCREEN_BUF_SIZE; i++){
 	screen_buf[i] = 0;
     }
@@ -491,7 +491,7 @@ void lcd_bar_set(int value){
 void lcd_bar_create(void){
     int i;
     for(i = 0; i < 256; i++){
-	screen_buf[ i] = 0;
+	screen_buf[4 * 8 * 16 + i] = 0;
     }
     
     draw_rectangle(0, 0 ,16 , 64);
