@@ -488,13 +488,38 @@ void lcd_bar_set(int value){
     }
 }
 
+#define BAR_START 3 * 8 * 16
 void lcd_bar_create(void){
-    int i;
+    int i,j;
     for(i = 0; i < 256; i++){
-	screen_buf[4 * 8 * 16 + i] = 0;
+	screen_buf[3 * 8 * 16 + i] = 0;
+    }
+
+    // top
+    i = 0;
+    screen_buf[BAR_START + i++] = 0x00;
+    screen_buf[BAR_START + i++] = 0x07;
+    for(j = 0; j < 12; j++){
+	screen_buf[BAR_START + i++] = 0xFF;
+    }
+    screen_buf[BAR_START + i++] = 0xE0;
+
+    // bottom
+    i = 0;
+    screen_buf[BAR_START + 16 * 15 + i++] = 0x00;
+    screen_buf[BAR_START + 16 * 15 + i++] = 0x07;
+    for(j = 0; j < 12; j++){
+	screen_buf[BAR_START + 16 * 15 + i++] = 0xFF;
+    }
+    screen_buf[BAR_START + 16 * 15  +i++] = 0xE0;
+
+    //left & right
+    for(j = 0; j < 14; j++){
+	screen_buf[BAR_START + j * 16 + 16 + 1] = 0x04;
+	screen_buf[BAR_START + j * 16 + 16 + 14] = 0x20;
     }
     
-    draw_rectangle(0, 0 ,16 , 64);
+    draw_rectangle(0, 3 * 8, 16 , 16);
 }
 
 static void set_addr(int x, int y){
