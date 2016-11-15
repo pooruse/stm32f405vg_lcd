@@ -78,7 +78,8 @@ struct st7920_draw_rectangle_t
 
 void st7920_init(void);
 void lcd_draw_rectangle(struct st7920_draw_rectangle_t draw);
-void lcd_draw_font(int f, int x, int y);
+void lcd_clear(void);
+void lcd_set_font_addr(int x, int y);
 
 #endif
 

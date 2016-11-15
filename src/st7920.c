@@ -1,6 +1,7 @@
 #include <string.h>
 #include "spi.h"
 #include "st7920.h"
+#include "stdio.h"
 #include "font.h"
 
 #define SHIFT_TEST
@@ -12,10 +13,10 @@ static void copy_array_with_shift(
     int head_shift,
     int tail_shift);
 
-static void lcd_draw_8x8(uint8_t *but, int x, int y);
-static void lcd_draw_clear(void);
-
 static void set_addr(int x, int y);
+static void lcd_draw_font(int f);
+static void lcd_putc(char c);
+
 //static uint8_t read(uint8_t command);
 static void write(uint32_t data);
 static void wait_busy(void);
@@ -23,7 +24,20 @@ static void send_sync(uint8_t cmd);
 static void send_byte(uint8_t data);
 
 static uint8_t screen_buf[1024]; // 128 x 64 bit = 1024 byte
-int delay;
+
+static int delay;
+static int font_x = 0, font_y = 0;
+
+struct __FILE {
+    int dummy;
+};
+
+FILE __stdout;
+
+int fputc(int ch, FILE *f){
+    lcd_putc((char)ch);
+    return ch;
+}
 
 void st7920_init(void){
 
@@ -45,8 +59,6 @@ void st7920_init(void){
     // clear ddram (note: can't clear graphic ram)
     write(CLEAR);
     for(delay=0;delay<2000000;delay++);
-
-    lcd_draw_clear();
 
     #ifdef SHIFT_TEST
     {
@@ -344,26 +356,61 @@ void lcd_draw_rectangle(struct st7920_draw_rectangle_t draw)
     draw_rectangle(xb, y, wb, h);
 }
 
-void lcd_draw_font(int f, int x, int y)
-{
-    lcd_draw_8x8((uint8_t *)&font[f*8],x,y);
+void lcd_set_font_addr(int x, int y){
+    font_x = x;
+    font_y = y;
 }
 
-static void lcd_draw_8x8(uint8_t *buf, int x, int y){
-
+static void lcd_draw_font(int f)
+{
     struct st7920_draw_rectangle_t draw;
     
-    draw.x = x;
-    draw.y = y;
-    draw.w = 8;
-    draw.h = 8;
-    draw.buf = buf;
+    draw.x = (font_x * 6) + 1;
+    draw.y = font_y * 8;
+    draw.w = 5;
+    draw.h = 7;
+    draw.buf = (uint8_t *)&font[f];
     draw.size = 8;
+
+    if(font_x >= 21){
+	font_x = 0;
+	font_y++;
+    }
+    
+    if(font_y >= 8){
+	font_y = 0;
+    }
     
     lcd_draw_rectangle(draw);
 }
 
-static void lcd_draw_clear(void){
+static void lcd_putc(char c){
+
+    int a = 0;
+    // numbers
+    if(c >= '0' && c <= '9'){
+	a = (int)c;
+	a -= (int)'0';
+    }
+    
+    // a ~ z
+    else if(c >= 'a' && c <= 'z'){
+	a = (int)c;
+	a -= (int)'a';
+    }
+
+    // A ~ Z
+    else if(c >= 'A' && c <= 'Z'){
+	a = (int)c;
+	a -= (int)'A';
+    }
+
+    if(a != 0){
+	lcd_draw_font(a);
+    }
+}
+
+void lcd_clear(void){
     int i,j;
     for(i = 0; i < 32; i++){
 	set_addr(0, i);
