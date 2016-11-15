@@ -3,7 +3,16 @@
 #include "st7920.h"
 #include "font.h"
 
-static void lcd_draw_font(int f, int x, int y);
+#define SHIFT_TEST
+
+static void shift_right_byte_array_by_bit(
+    uint8_t first,
+    uint8_t last,
+    uint8_t *src,
+    uint8_t *dst,
+    int size,
+    int bits);
+
 static void lcd_draw_8x8(uint8_t *but, int x, int y);
 static void lcd_draw_clear(void);
 
@@ -19,7 +28,7 @@ static uint8_t line_buf[16];
 int delay;
 
 void st7920_init(void){
-    
+
     spi_init();
     
     // make lcd run in the 8'bit mode
@@ -41,13 +50,38 @@ void st7920_init(void){
 
     lcd_draw_clear();
 
-    lcd_draw_font(0, 1*8+5, 0);
-    lcd_draw_font(1, 2*8+5, 0);
-    lcd_draw_font(2, 3*8+5, 0);
-    lcd_draw_font(3, 4*8+5, 0);
-    lcd_draw_font(4, 5*8+5, 0);
-    lcd_draw_font(5, 6*8+5, 0);
-    lcd_draw_font(6, 7*8+5, 0);
+    #ifdef SHIFT_TEST
+    {
+	uint8_t first = 0xF0;
+	uint8_t last = 0x0F;
+	int shift = 3;
+	uint8_t src[5] = {
+	    0x10, 0x18, 0xF8, 0xFF, 0xFF
+	};
+	uint8_t dst[6];
+
+	uint8_t expect[6] = {
+	    0xE2, 0x03, 0x1F, 0x1F, 0xFF, 0xEF
+	};
+
+	int i;
+	shift_right_byte_array_by_bit(
+	    first,
+	    last,
+	    src,
+	    dst,
+	    sizeof(src),
+	    shift
+	    );
+	
+	for(i = 0; i < 6; i++){
+	    if (dst[i] != expect[i] ){
+		// assert
+		while(1);
+	    }
+	}
+    }
+    #endif
     
 }
 
@@ -182,8 +216,9 @@ static void draw_parameter_modify(struct st7920_draw_rectangle_t *draw){
     }
 }
 
-static void shift_left_byte_array_by_bit(
+static void shift_right_byte_array_by_bit(
     uint8_t first,
+    uint8_t last,
     uint8_t *src,
     uint8_t *dst,
     int size,
@@ -191,25 +226,30 @@ static void shift_left_byte_array_by_bit(
     
     uint8_t msb, lsb;
     uint8_t mask;
-    int tmp;
     int i;
 
     if(size >= 16){
 	size = 15;
     }
-    
+
+    // when bits = 3, mask = 0001 1111
+    mask = (1 << (8 - bits)) - 1;
+
+    // start byte
     dst[0] = first;
-    mask = (1 << bits) - 1;
     dst[0] &= ~mask;
-    
-    for(i = 0; i < size - 1; i++){
-	tmp = src[i] << bits;
-	msb = (uint8_t)(tmp >> 8);
+    dst[0] |= (src[0] >> bits);
 
-	lsb = src[i] & mask;
+    // end byte
+    dst[size] = last;
+    dst[size] &= mask;
+    dst[size] |= (src[size-1] << (8 - bits));
 
-	dst[i + 0] |= msb;
-	dst[i + 1] = lsb << bits;
+    // middle bytes
+    for(i = 1; i < size; i++){	
+	msb = src[i - 1] << (8 - bits);
+	lsb = src[i] >> bits;
+	dst[i] = msb | lsb;
     }
 }    
 
@@ -267,10 +307,6 @@ void lcd_draw_rectangle(struct st7920_draw_rectangle_t draw)
     int start_part_len, end_part_len;
 
     uint8_t *buf;
-    uint8_t tmp;
-    int tmp_data;
-    
-    uint8_t mask;
     int i,j,k;
 
     draw_parameter_modify(&draw);
@@ -297,22 +333,23 @@ void lcd_draw_rectangle(struct st7920_draw_rectangle_t draw)
        end_part_len != 0) {
 	wb = wb + 1;
     }
-    
+
     // copy graphic to screen_buf
     k = 0;
     for(j = y; j < (h + y); j++){
 	
 	if(start_part_len > 0){
 	    
-	    shift_left_byte_array_by_bit(
+	    shift_right_byte_array_by_bit(
 		screen_buf[j*16 + xb],
-		&buf[(wb - 1)*j],
+		screen_buf[j*16 + xb + wb],
+		&buf[(wb - 1) * j],
 		line_buf,
-		wb,
-		start_part_len);
+		(wb - 1),
+		(8 - start_part_len));
 	    
-	    for(i = xb; i < (xb + wb) - 1; i++){
-		screen_buf[j*16+i] = line_buf[i - xb];
+	    for(i = xb; i < (xb + wb); i++){
+		screen_buf[j * 16 + i] = line_buf[i - xb];
 	    }
 	    
 	} else {
@@ -321,29 +358,12 @@ void lcd_draw_rectangle(struct st7920_draw_rectangle_t draw)
 	    }
 	}
 
-	// fill the last byte
-	if(end_part_len > 0){
-	    
-	    mask = 1 << end_part_len;
-	    mask -= 1;
-	    mask <<= (8 - end_part_len);
-	    
-	    tmp_data = buf[j * (wb - 1)];
-	    tmp_data <<= 8;
-	    tmp_data >>= end_part_len;
-		
-	    tmp = (uint8_t)tmp_data;
-	    tmp |= (screen_buf[j * 16 + wb] & ~mask);
-	    screen_buf[j * 16 + xb + wb - 1] = tmp;
-	}
-	
-	
     }
     
     draw_rectangle(xb, y, wb, h);
 }
 
-static void lcd_draw_font(int f, int x, int y)
+void lcd_draw_font(int f, int x, int y)
 {
     lcd_draw_8x8((uint8_t *)&font[f*8],x,y);
 }
