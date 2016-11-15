@@ -5,13 +5,12 @@
 
 #define SHIFT_TEST
 
-static void shift_right_byte_array_by_bit(
-    uint8_t first,
-    uint8_t last,
+static void copy_array_with_shift(
     uint8_t *src,
     uint8_t *dst,
     int size,
-    int bits);
+    int head_shift,
+    int tail_shift);
 
 static void lcd_draw_8x8(uint8_t *but, int x, int y);
 static void lcd_draw_clear(void);
@@ -24,7 +23,6 @@ static void send_sync(uint8_t cmd);
 static void send_byte(uint8_t data);
 
 static uint8_t screen_buf[1024]; // 128 x 64 bit = 1024 byte
-static uint8_t line_buf[16];
 int delay;
 
 void st7920_init(void){
@@ -52,26 +50,26 @@ void st7920_init(void){
 
     #ifdef SHIFT_TEST
     {
-	uint8_t first = 0xF0;
-	uint8_t last = 0x0F;
-	int shift = 3;
+	int head = 3;
+	int tail = 3;
 	uint8_t src[5] = {
 	    0x10, 0x18, 0xF8, 0xFF, 0xFF
 	};
-	uint8_t dst[6];
+	uint8_t dst[6] = {
+	    0xF0, 0x00, 0x00, 0x00, 0x00, 0x0F
+	};
 
 	uint8_t expect[6] = {
 	    0xE2, 0x03, 0x1F, 0x1F, 0xFF, 0xEF
 	};
 
 	int i;
-	shift_right_byte_array_by_bit(
-	    first,
-	    last,
+	copy_array_with_shift(
 	    src,
 	    dst,
 	    sizeof(src),
-	    shift
+	    head,
+	    tail
 	    );
 	
 	for(i = 0; i < 6; i++){
@@ -216,13 +214,12 @@ static void draw_parameter_modify(struct st7920_draw_rectangle_t *draw){
     }
 }
 
-static void shift_right_byte_array_by_bit(
-    uint8_t first,
-    uint8_t last,
+static void copy_array_with_shift(
     uint8_t *src,
     uint8_t *dst,
     int size,
-    int bits){
+    int head_shift,
+    int tail_shift){
     
     uint8_t msb, lsb;
     uint8_t mask;
@@ -232,23 +229,26 @@ static void shift_right_byte_array_by_bit(
 	size = 15;
     }
 
-    // when bits = 3, mask = 0001 1111
-    mask = (1 << (8 - bits)) - 1;
+    // when head = 3, mask = 0001 1111
+    mask = (1 << (8 - head_shift)) - 1;
 
     // start byte
-    dst[0] = first;
     dst[0] &= ~mask;
-    dst[0] |= (src[0] >> bits);
+    dst[0] |= (src[0] >> head_shift);
+
+    
+    // when tail = 5, mask = 0000 0111
+    mask = (1 << (8 - tail_shift)) - 1;
 
     // end byte
-    dst[size] = last;
+    dst[size] = dst[size];
     dst[size] &= mask;
-    dst[size] |= (src[size-1] << (8 - bits));
+    dst[size] |= (src[size - 1] << (8 - tail_shift));
 
     // middle bytes
     for(i = 1; i < size; i++){	
-	msb = src[i - 1] << (8 - bits);
-	lsb = src[i] >> bits;
+	msb = src[i - 1] << (8 - head_shift);
+	lsb = src[i] >> head_shift;
 	dst[i] = msb | lsb;
     }
 }    
@@ -304,10 +304,10 @@ void lcd_draw_rectangle(struct st7920_draw_rectangle_t draw)
     // xb = x index (unit: 8 point) 
     int xb,wb;
     
-    int start_part_len, end_part_len;
+    int head_shift, end_part_len;
 
     uint8_t *buf;
-    int i,j,k;
+    int j;
 
     draw_parameter_modify(&draw);
     
@@ -323,41 +323,22 @@ void lcd_draw_rectangle(struct st7920_draw_rectangle_t draw)
 	return;
     }
 
-    start_part_len = 8 - (x % 8);
-    if(start_part_len == 8){
-	start_part_len = 0;
-    } 
-
+    head_shift = x % 8;
     end_part_len = (x + w) % 8;
-    if(start_part_len != 0 ||
+    
+    if(head_shift != 0 ||
        end_part_len != 0) {
 	wb = wb + 1;
     }
 
     // copy graphic to screen_buf
-    k = 0;
     for(j = y; j < (h + y); j++){
-	
-	if(start_part_len > 0){
-	    
-	    shift_right_byte_array_by_bit(
-		screen_buf[j*16 + xb],
-		screen_buf[j*16 + xb + wb],
-		&buf[(wb - 1) * j],
-		line_buf,
-		(wb - 1),
-		(8 - start_part_len));
-	    
-	    for(i = xb; i < (xb + wb); i++){
-		screen_buf[j * 16 + i] = line_buf[i - xb];
-	    }
-	    
-	} else {
-	    for(i = xb; i < (xb + wb) - 1; i++){
-		screen_buf[j*16+i] = buf[k++];
-	    }
-	}
-
+	copy_array_with_shift(
+	    &buf[(wb - 1) * j],
+	    &screen_buf[16 * j + xb],
+	    (wb - 1),
+	    head_shift,
+	    end_part_len);
     }
     
     draw_rectangle(xb, y, wb, h);
