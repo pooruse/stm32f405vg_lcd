@@ -25,7 +25,7 @@ int main(void){
     setvbuf(stdout, NULL, _IONBF, 0);
     setvbuf(stderr, NULL, _IONBF, 0);
     
-    printf("Ackuretta LCD Testnn %f\n\r",2.54546);
+    printf("Ackuretta LCD Test \n\r");
     printf("number: %d\n\r", 535);
     printf("float: %1.2f\n\r",1.55);
 
@@ -40,10 +40,10 @@ int main(void){
 	    gpio_toggle_debug_led();
 	    lcd_bar_set(percentage);
 	    
-	    printf("%02d%%\b\b\b", percentage);
+	    printf("%3d%%\b\b\b\b", percentage);
 	    if(increase == 1){
 		percentage++;
-		if(percentage == 99){
+		if(percentage == 100){
 		    increase = 0;
 		}
 	    } else {
