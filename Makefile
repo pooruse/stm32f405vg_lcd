@@ -24,7 +24,7 @@ CFLAGS += -mcpu=cortex-m4
 CFLAGS += -mfloat-abi=hard
 CFLAGS += -mfpu=fpv4-sp-d16
 CFLAGS += -ffunction-sections
-CFLAGS += -MD
+#CFLAGS += -MD
 CFLAGS += -fdata-sections
 CFLAGS += -Wall
 #CFLAGS += -Wextra
@@ -32,8 +32,8 @@ CFLAGS += -Wimplicit-function-declaration
 CFLAGS += -Wmissing-prototypes
 CFLAGS += -Wstrict-prototypes
 CFLAGS += -Wredundant-decls
-CFLAGS += -ggdb3 
-CFLAGS += -g3
+#CFLAGS += -ggdb3 
+#CFLAGS += -g3
 
 LDFILE=STM32F405VG.ld
 MAPFILE=$(PROJECT).map
