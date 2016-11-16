@@ -414,6 +414,7 @@ void lcd_putc(char c){
     // return
     else if(c == '\r'){
 	font_x = 0;
+	return;
     }
     
     // new line
@@ -422,8 +423,15 @@ void lcd_putc(char c){
 	if(font_y >= 8){
 	    font_y = 0;
 	}
+	return;
     }
 
+    else if(c == '\b'){
+	if(font_x != 0){
+	    font_x--;
+	}
+	return;
+    }
     // space
     else if(c == ' '){
 	a = 62;
@@ -457,11 +465,11 @@ void lcd_putc(char c){
     // -
     else if(c == '-'){
 	a = 68;
+    } else {
+	return;
     }
     
-    if(a != 0){
-	lcd_draw_font(a);
-    }
+    lcd_draw_font(a);
 }
 
 void lcd_clear(void){
@@ -481,43 +489,48 @@ void lcd_clear(void){
 
 }
 
-#define BAR_START 3 * 8 * 16
+static void set_byte_array_bit(uint8_t *buf, int pos, int value)
+{
+    uint8_t tmp;
+    int index;
+    int bit;
+    bit = pos % 8;
+    index = pos / 8;
+    tmp = 0x80 >> bit;
+    if(value != 0){
+	buf[index] |= tmp;
+    } else {
+	buf[index] &= ~tmp;
+    }
+}
+
+#define BAR_START (3 * 8 + 1) * 16 
 void lcd_bar_set(int value){
     static int percentage = 0;
-    struct st7920_draw_rectangle_t draw;
-    uint8_t buf[16];
-    int i;
+    int i, j;
+    int index;
+    
     
     if(value != percentage){
 	if(value > percentage){
-	    
-	    memset(buf, 0xFF, 16);
-	    draw.buf = buf;
-
-	    for(i = 0; i < 14; i++){
-		draw.x = 13 + percentage;
-		draw.y = 25 + i;
-		draw.w = value - percentage;
-		draw.h = 1;
-		draw.size = 16;
-		lcd_draw_rectangle(draw);
+	    for(i = percentage; i < value; i++){
+		set_byte_array_bit(&screen_buf[BAR_START + 16] ,  i + 13, 1);
 	    }
-	    percentage = value;
-	    
 	} else if (value < percentage){
-	    
-	    memset(buf, 0, 16);
-	    draw.buf = buf;
-	    
-	    for(i = 0; i < 14; i++){
-		draw.x = 13 + percentage - value;
-		draw.y = 25 + i;
-		draw.w = percentage - value;
-		draw.h = 1;
-		draw.size = 16;
-		lcd_draw_rectangle(draw);
+	    for(i = value; i < percentage; i++){
+		set_byte_array_bit(&screen_buf[BAR_START + 16] , i + 13, 0);
 	    }
 	}
+
+	for(i = 2; i < 13; i++){
+	    for(j = 0; j < 16; j++){
+		index = BAR_START + i * 16 + j;
+		screen_buf[index] = screen_buf[BAR_START + 16 + j];
+	    }
+	}
+	percentage = value;
+	
+	draw_rectangle(0, 3 * 8, 16, 16);
     }
 }
 
@@ -525,7 +538,7 @@ void lcd_bar_set(int value){
 void lcd_bar_create(void){
     int i,j;
     for(i = 0; i < 256; i++){
-	screen_buf[3 * 8 * 16 + i] = 0;
+	screen_buf[BAR_START - 16 + i] = 0;
     }
 
     // top
@@ -539,15 +552,15 @@ void lcd_bar_create(void){
 
     // bottom
     i = 0;
-    screen_buf[BAR_START + 16 * 15 + i++] = 0x00;
-    screen_buf[BAR_START + 16 * 15 + i++] = 0x07;
+    screen_buf[BAR_START + 16 * 13 + i++] = 0x00;
+    screen_buf[BAR_START + 16 * 13 + i++] = 0x07;
     for(j = 0; j < 12; j++){
-	screen_buf[BAR_START + 16 * 15 + i++] = 0xFF;
+	screen_buf[BAR_START + 16 * 13 + i++] = 0xFF;
     }
-    screen_buf[BAR_START + 16 * 15  +i++] = 0xE0;
+    screen_buf[BAR_START + 16 * 13  + i++] = 0xE0;
 
     //left & right
-    for(j = 0; j < 14; j++){
+    for(j = 0; j < 12; j++){
 	screen_buf[BAR_START + j * 16 + 16 + 1] = 0x04;
 	screen_buf[BAR_START + j * 16 + 16 + 14] = 0x20;
     }
@@ -597,7 +610,7 @@ static void wait_busy(){
     
 #else
     
-    for(delay = 0; delay < 3000; delay++);
+    for(delay = 0; delay < 1200; delay++);
 #endif
     
 }
