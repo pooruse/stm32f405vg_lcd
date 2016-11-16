@@ -5,7 +5,7 @@
 
 
 void SysTick_Handler(void);
-int tick = 0;
+volatile int tick = 0;
 int delay;
 
 int main(void){
@@ -14,7 +14,9 @@ int main(void){
     int increase = 1;
     SystemCoreClockUpdate();
 
-    for(delay = 0; delay < 4000000; delay++); // delay for lcd test
+    for(delay = 0; delay < 4000000; delay++){
+	asm("");
+    }
     
     gpio_init();
     st7920_init();

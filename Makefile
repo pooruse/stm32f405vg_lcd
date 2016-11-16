@@ -18,7 +18,7 @@ CFLAGS +=-DSTM32F40_41xxx
 CFLAGS += -DUSE_STDPERIPH_DRIVER
 CFLAGS += -D__FPU_PRESENT=1
 CFLAGS += -D__FPU_USED=1
-#CFLAGS += -Os
+CFLAGS += -Os
 CFLAGS += -mthumb
 CFLAGS += -mcpu=cortex-m4
 CFLAGS += -mfloat-abi=hard
@@ -32,8 +32,8 @@ CFLAGS += -Wimplicit-function-declaration
 CFLAGS += -Wmissing-prototypes
 CFLAGS += -Wstrict-prototypes
 CFLAGS += -Wredundant-decls
-#CFLAGS += -ggdb3 
-#CFLAGS += -g3
+CFLAGS += -ggdb3 
+CFLAGS += -g3
 
 LDFILE=STM32F405VG.ld
 MAPFILE=$(PROJECT).map

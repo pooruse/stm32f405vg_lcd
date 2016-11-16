@@ -47,7 +47,9 @@ void st7920_init(void){
     
     // clear ddram (note: can't clear graphic ram)
     write(CLEAR);
-    for(delay=0;delay<2000000;delay++);
+    for(delay=0;delay<2000000;delay++){
+	asm("");
+    }
 
     #ifdef SHIFT_TEST
     {
@@ -610,7 +612,9 @@ static void wait_busy(){
     
 #else
     
-    for(delay = 0; delay < 1200; delay++);
+    for(delay = 0; delay < 1200; delay++){
+	asm("");
+    }
 #endif
     
 }
