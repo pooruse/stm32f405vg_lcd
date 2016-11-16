@@ -516,11 +516,11 @@ void lcd_bar_set(int value){
     if(value != percentage){
 	if(value > percentage){
 	    for(i = percentage; i < value; i++){
-		set_byte_array_bit(&screen_buf[BAR_START + 16] ,  i + 13, 1);
+		set_byte_array_bit(&screen_buf[BAR_START + 16] ,  i + 14, 1);
 	    }
 	} else if (value < percentage){
 	    for(i = value; i < percentage; i++){
-		set_byte_array_bit(&screen_buf[BAR_START + 16] , i + 13, 0);
+		set_byte_array_bit(&screen_buf[BAR_START + 16] , i + 14, 0);
 	    }
 	}
 
