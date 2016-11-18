@@ -97,11 +97,11 @@ $(APP_SRC)/%.o: $(APP_SRC)/%.c
 .PHONY: clean
 
 clean:
-	-rm $(STDLIB_SRC)/*.d
+	#-rm $(STDLIB_SRC)/*.d
 	-rm $(STDLIB_SRC)/*.o
-	-rm $(STARTUP_SRC)/*.d
+	#-rm $(STARTUP_SRC)/*.d
 	-rm $(STARTUP_SRC)/*.o
-	-rm $(APP_SRC)/*.d
+	#-rm $(APP_SRC)/*.d
 	-rm $(APP_SRC)/*.o
 	-rm $(ELF)
 	-rm $(HEX)

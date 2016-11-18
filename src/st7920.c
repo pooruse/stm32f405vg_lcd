@@ -5,7 +5,6 @@
 #include "font.h"
 
 //#define SHIFT_TEST
-//#define CHECK_BUSY
 
 #define SCREEN_BUF_SIZE 1024 // 128 x 64 bit = 1024 byte
 static void copy_array_with_shift(
@@ -18,7 +17,6 @@ static void copy_array_with_shift(
 static void set_addr(int x, int y);
 static void lcd_draw_font(int f);
 
-static uint8_t read(uint32_t command);
 static void write(uint32_t data);
 static void wait_busy(void);
 static void send_sync(uint8_t cmd);
@@ -46,7 +44,7 @@ void st7920_init(void){
 
     write(HOME);
     
-    // clear ddram (note: can't clear graphic ram)
+    // clear ddram (note: this command can't clear graphic ram)
     write(CLEAR);
     for(delay=0;delay<2000000;delay++){
 	asm("");
@@ -602,34 +600,15 @@ static void write(uint32_t data){
     wait_busy();
 }
 
-static uint8_t read(uint32_t command){
-
-    uint8_t lsb;
-    uint8_t msb;
-    uint8_t tmp;
-    send_sync(command >> 8);
-    msb = spi_rx() & 0xF0;
-    lsb = spi_rx() & 0xF0;
-    tmp = msb | (lsb >> 4);
-    return tmp;
-}
 
 static void wait_busy(){
 
-#ifdef CHECK_BUSY
-    uint8_t tmp;
-    do {
-	tmp = read(READ_BUSY_ADDR);
-	tmp &= READ_BUSY_MASK;
-    }while(tmp);
-    
-#else
-    
-    for(delay = 0; delay < 1200; delay++){
+    // this delay is different depends on optimization condition
+    // Os -> 88 us
+    // O0 -> 376 us
+    for(delay = 0; delay < 4000; delay++){
 	asm("");
     }
-#endif
-    
 }
 
 static void send_sync(uint8_t cmd){

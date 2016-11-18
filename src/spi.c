@@ -76,13 +76,12 @@ void spi_tx(uint8_t dat){
 uint8_t spi_rx(void){
 
     uint8_t dat;
-    int i;
 
     while(SPI_GetFlagStatus(SPI1, SPI_FLAG_TXE) == RESET);
     while(SPI_GetFlagStatus(SPI1, SPI_FLAG_BSY) == SET);
     
     SPI_BiDirectionalLineConfig(SPI1, SPI_Direction_Rx);
-    SPI_SendData(SPI1, dat);
+    SPI_SendData(SPI1, 0x00);
     while(SPI_GetFlagStatus(SPI1, SPI_FLAG_RXNE) != RESET);
     dat = SPI_ReceiveData(SPI1);
     SPI_BiDirectionalLineConfig(SPI1, SPI_Direction_Tx);
