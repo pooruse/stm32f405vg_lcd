@@ -1,8 +1,10 @@
 #include "stm32f4xx.h"
 #include "gpio.h"
+#include "spi.h"
 #include "st7920.h"
 #include <stdio.h>
 
+//#define SPI_BIRX_TEST
 
 void SysTick_Handler(void);
 volatile int tick = 0;
@@ -26,6 +28,18 @@ int main(void){
     setvbuf(stdin, NULL, _IONBF, 0);
     setvbuf(stdout, NULL, _IONBF, 0);
     setvbuf(stderr, NULL, _IONBF, 0);
+
+    #ifdef SPI_BIRX_TEST
+    while(1){
+	uint8_t tmp;
+	int i;
+	for(i = 0; i < 8000000; i++);
+	gpio_toggle_debug_led();
+	lcd_set_font_addr(0,0);
+	tmp = spi_rx();
+	printf("spi_rx = %X",tmp);
+    }
+    #endif
     
     printf("Ackuretta LCD Test \n\r");
     printf("number: %d\n\r", 535);
