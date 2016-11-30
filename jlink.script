@@ -3,4 +3,5 @@ loadfile lcd.hex
 h
 r
 g
+sleep(1000)
 q
