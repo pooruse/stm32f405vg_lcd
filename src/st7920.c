@@ -3,6 +3,8 @@
 #include "st7920.h"
 #include "stdio.h"
 #include "font.h"
+#include "stubs.h"
+#include <stdarg.h>
 
 //#define SHIFT_TEST
 
@@ -26,6 +28,20 @@ static uint8_t screen_buf[SCREEN_BUF_SIZE];
 
 static int delay;
 static int font_x = 0, font_y = 0;
+
+void lcd_printf(const char *format,...)
+{
+    va_list args;
+    
+    stubs_set_channel(PUTC_LCD);
+
+    va_start(args, format);
+    //printf(format, args);
+    vprintf(format, args);
+    va_end(args);
+    
+    stubs_set_channel(PUTC_RTT);
+}
 
 void st7920_init(void){
 
@@ -568,6 +584,13 @@ void lcd_bar_create(void){
     }
     
     draw_rectangle(0, 3 * 8, 16 , 16);
+}
+
+
+
+void lcd_select_line(int n)
+{
+
 }
 
 static void set_addr(int x, int y){

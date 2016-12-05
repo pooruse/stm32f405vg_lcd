@@ -37,26 +37,26 @@ int main(void){
 	gpio_toggle_debug_led();
 	lcd_set_font_addr(0,0);
 	tmp = spi_rx();
-	printf("spi_rx = %X",tmp);
+	lcd_printf("spi_rx = %X",tmp);
     }
     #endif
     
-    printf("Ackuretta LCD Test \n\r");
-    printf("number: %d\n\r", 535);
-    printf("float: %1.2f\n\r",1.55);
+    lcd_printf("Ackuretta LCD Test \n\r");
+    lcd_printf("number: %d\n\r", 535);
+    lcd_printf("float: %1.2f\n\r",1.55);
 
     lcd_bar_create();
     
     SysTick_Config(SystemCoreClock/1000);
     lcd_set_font_addr(0,5);
-    printf("progress: ");
+    lcd_printf("progress: ");
     while(1){
 	if(tick >= 200) {
 	    tick = 0;
 	    gpio_toggle_debug_led();
 	    lcd_bar_set(percentage);
 	    
-	    printf("%3d%%\b\b\b\b", percentage);
+	    lcd_printf("%3d%%\b\b\b\b", percentage);
 	    if(increase == 1){
 		percentage++;
 		if(percentage == 100){

@@ -1,1 +1,1 @@
-JLinkGDBServer -if SWD -device STM32F405VG
+JLinkGDBServer -if SWD -device STM32F405VG -vd

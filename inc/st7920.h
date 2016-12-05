@@ -83,6 +83,9 @@ void lcd_set_font_addr(int x, int y);
 void lcd_putc(char c);
 void lcd_bar_set(int value);
 void lcd_bar_create(void);
+void lcd_select_line(int n);
+
+void lcd_printf(const char *format,...);
 
 #endif
 

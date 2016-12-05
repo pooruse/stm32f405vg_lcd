@@ -1,5 +1,8 @@
 #include <stdio.h>
+
+#include "stubs.h"
 #include "st7920.h"
+#include "SEGGER_RTT.h"
 
 #ifdef _NEWLIB_VERSION
 
@@ -11,8 +14,9 @@
 #undef errno
 
 extern int errno;
+static char dummy_heap[512];
 
-static char dummy_heap[16];
+static int mode = 0;
 
 int _close(int file);
 int _fstat(int file, struct stat *st);
@@ -21,6 +25,12 @@ int _lseek(int file, int ptr, int dir);
 caddr_t _sbrk(int incr);
 int _read(int file, char *ptr, int len);
 int _write(int file, char *ptr, int len);
+
+void stubs_set_channel(int ch)
+{
+    mode = ch;
+}
+
 
 int _close(int file)
 {
@@ -59,8 +69,12 @@ int _write(int file, char *ptr, int len) {
     switch (file) {
     case STDERR_FILENO: /* stderr */	
     case STDOUT_FILENO: /*stdout*/
-	for(n = 0; n < len; n++){
+	if(mode == PUTC_LCD) {
+	    for(n = 0; n < len; n++){
 	    	lcd_putc(ptr[n]);
+	    }
+	} else if(mode == PUTC_RTT) {
+	    SEGGER_RTT_Write(0, ptr, (unsigned)len);
 	}
 	break;
 
