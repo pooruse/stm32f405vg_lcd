@@ -590,29 +590,29 @@ void lcd_bar_create(void){
 /**
  *  @brief inverse_screen_buff
  *     inverse rectangle area of screen buffer data
- *  @param sx 
+ *  @param sx
  *    x of start point. 
  *
  *  @param sy 
  *    y of start point range: 0~63
  *
- *  @param ex
- *    x of end point. unit: byte, range: 0~15
+ *  @param wb
+ *    weight of inverse area (unit: byte)
  *
- *  @param ey
- *    y of end point range: 0~63
+ *  @param h
+ *    height of inverse area (unit: bit)
  *
  */
-static void inverse_screen_buff(int sx, int sy, int ex, int ey)
+static void inverse_screen_buff(int sx, int sy, int wb, int h)
 {
     int x,y;
-    if(sy >= 64 || ey >= 64 || sx >= 16 || ex >= 16){
+    if(sy >= 64 || (sy+h) > 64 || sx >= 16 || (sx+wb) > 16){
 	// overflow protection
 	return;
     }
 
-    for(y = sy; y <= ey; y++){
-	for(x = sx; x <= ex; x++){
+    for(y = sy; y < (sy+h); y++){
+	for(x = sx; x < (sx+wb); x++){
 	    screen_buf[y * 16 + x] =  ~screen_buf[y * 16 + x];
 	}
     } 
@@ -630,13 +630,12 @@ static void inverse_screen_buff(int sx, int sy, int ex, int ey)
  */
 void lcd_select_line(int n)
 {
-    int sy,ey;
+    int sy;
 
     // clear inverse in old selected line
     if(selected_line != LCD_LINE_OFF){
 	sy = selected_line * 8;
-	ey = sy + 7;
-	inverse_screen_buff(0, sy,15, ey);
+	inverse_screen_buff(0, sy, 16, 8);
 	draw_rectangle(0, sy, 16, 8);
 	
     }
@@ -644,8 +643,7 @@ void lcd_select_line(int n)
     // add inverse in new slected line
     if(n != LCD_LINE_OFF){
 	sy = n * 8;
-	ey = sy + 7;
-	inverse_screen_buff(0, sy,15, ey);
+	inverse_screen_buff(0, sy, 16, 8);
 	draw_rectangle(0, sy, 16, 8);
     }
 

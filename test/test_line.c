@@ -40,7 +40,7 @@ int main(void){
     }
     #endif
 
-    /*
+    
     lcd_printf("Ackuretta LCD Test \n\r");
     lcd_printf("number: %d\n\r", 535);
     lcd_printf("curing time: %1.2f\n\r",32.999);
@@ -50,7 +50,7 @@ int main(void){
     lcd_printf("description2\n\r");
     lcd_printf("description3\n\r");
     lcd_printf("description4\n\r");
-    */
+    
     
 
     SysTick_Config(SystemCoreClock/1000);
