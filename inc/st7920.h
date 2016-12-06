@@ -65,6 +65,18 @@
 
 #include <stdint.h>
 
+enum {
+    LCD_LINE_0,
+    LCD_LINE_1,
+    LCD_LINE_2,
+    LCD_LINE_3,
+    LCD_LINE_4,
+    LCD_LINE_5,
+    LCD_LINE_6,
+    LCD_LINE_7,
+    LCD_LINE_OFF,
+};
+
 
 struct st7920_draw_rectangle_t
 {

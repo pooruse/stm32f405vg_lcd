@@ -26,6 +26,7 @@ static void send_byte(uint8_t data);
 
 static uint8_t screen_buf[SCREEN_BUF_SIZE]; 
 
+static int selected_line = LCD_LINE_OFF;
 static int delay;
 static int font_x = 0, font_y = 0;
 
@@ -33,14 +34,13 @@ void lcd_printf(const char *format,...)
 {
     va_list args;
     
-    stubs_set_channel(PUTC_LCD);
-
     va_start(args, format);
-    //printf(format, args);
-    vprintf(format, args);
-    va_end(args);
     
+    stubs_set_channel(PUTC_LCD);
+    vprintf(format, args);
     stubs_set_channel(PUTC_RTT);
+    
+    va_end(args);
 }
 
 void st7920_init(void){
@@ -120,7 +120,7 @@ void st7920_init(void){
  *     screen height (bit)
  *  @caution
  *     if w or h is over the screen size, 
- *   this function have no protection for it.
+ *   this function has no protection for it.
  */
 static void _draw_rectangle(int xh, int y, int wh, int h)
 {
@@ -587,10 +587,69 @@ void lcd_bar_create(void){
 }
 
 
+/**
+ *  @brief inverse_screen_buff
+ *     inverse rectangle area of screen buffer data
+ *  @param sx 
+ *    x of start point. 
+ *
+ *  @param sy 
+ *    y of start point range: 0~63
+ *
+ *  @param ex
+ *    x of end point. unit: byte, range: 0~15
+ *
+ *  @param ey
+ *    y of end point range: 0~63
+ *
+ */
+static void inverse_screen_buff(int sx, int sy, int ex, int ey)
+{
+    int x,y;
+    if(sy >= 64 || ey >= 64 || sx >= 16 || ex >= 16){
+	// overflow protection
+	return;
+    }
 
+    for(y = sy; y <= ey; y++){
+	for(x = sx; x <= ex; x++){
+	    screen_buf[y * 16 + x] =  ~screen_buf[y * 16 + x];
+	}
+    } 
+}
+
+/**
+ *  @brief lcd_select_line
+ *     we seperate this lcd screen to 8 lines
+ *     this function will inverse one line of screen_buf
+ *  @param n
+ *     LCD_LINE_0 ~ LCD_LINE_7
+ *     if you select LCD_LINE_OFF
+ *     all inverse will be clear
+ *
+ */
 void lcd_select_line(int n)
 {
+    int sy,ey;
 
+    // clear inverse in old selected line
+    if(selected_line != LCD_LINE_OFF){
+	sy = selected_line * 8;
+	ey = sy + 7;
+	inverse_screen_buff(0, sy,15, ey);
+	draw_rectangle(0, sy, 16, 8);
+	
+    }
+
+    // add inverse in new slected line
+    if(n != LCD_LINE_OFF){
+	sy = n * 8;
+	ey = sy + 7;
+	inverse_screen_buff(0, sy,15, ey);
+	draw_rectangle(0, sy, 16, 8);
+    }
+
+    selected_line = n;
 }
 
 static void set_addr(int x, int y){

@@ -14,7 +14,7 @@
 #undef errno
 
 extern int errno;
-static char dummy_heap[512];
+static char dummy_heap[64];
 
 static int mode = 0;
 

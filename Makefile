@@ -113,8 +113,13 @@ $(APP_SRC)/%.o: $(APP_SRC)/%.c
 $(RTT_SRC)/%.o: $(RTT_SRC)/%.c
 	$(CC) -o $@ -c $(CFLAGS) $(INCLUDE_PATH) $<
 
-
 $(MAIN_OBJ): $(MAIN_SRC)
+	$(CC) -o $@ -c $(CFLAGS) $(INCLUDE_PATH) $<
+
+test_line.elf: test/test_line.o $(OBJ)
+	$(CC) -o $@ $^ $(LDFLAGS)
+
+test/test_line.o: test/test_line.c
 	$(CC) -o $@ -c $(CFLAGS) $(INCLUDE_PATH) $<
 
 

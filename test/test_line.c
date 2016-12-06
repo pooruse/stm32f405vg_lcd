@@ -11,11 +11,10 @@ volatile int tick = 0;
 int delay;
 
 int main(void){
+    int line_index = 0;
 
-    int percentage = 0;
-    int increase = 1;
     SystemCoreClockUpdate();
-
+    
     for(delay = 0; delay < 4000000; delay++){
 	asm("");
     }
@@ -40,36 +39,30 @@ int main(void){
 	lcd_printf("spi_rx = %X",tmp);
     }
     #endif
-    
+
+    /*
     lcd_printf("Ackuretta LCD Test \n\r");
     lcd_printf("number: %d\n\r", 535);
-    lcd_printf("float: %1.2f\n\r",1.55);
-
-    lcd_bar_create();
+    lcd_printf("curing time: %1.2f\n\r",32.999);
+    lcd_printf("layers: %d\n\r",500);
+    lcd_printf("description:\n\r");
+    lcd_printf("description1\n\r");
+    lcd_printf("description2\n\r");
+    lcd_printf("description3\n\r");
+    lcd_printf("description4\n\r");
+    */
     
+
     SysTick_Config(SystemCoreClock/1000);
-    lcd_set_font_addr(0,5);
-    lcd_printf("progress: ");
     while(1){
-	if(tick >= 200) {
+	if(tick >= 1000) {
 	    tick = 0;
 	    gpio_toggle_debug_led();
-	    lcd_bar_set(percentage);
-	    
-	    lcd_printf("%3d%%\b\b\b\b", percentage);
-	    if(increase == 1){
-		percentage++;
-		if(percentage == 100){
-		    increase = 0;
-		}
-	    } else {
-		percentage--;
-		if(percentage == 0){
-		    increase = 1;
-		}
+	    lcd_select_line(line_index);
+	    line_index++;
+	    if(line_index > LCD_LINE_OFF){
+		line_index = 0;
 	    }
-	    
-	    
 	}
     }
 }
