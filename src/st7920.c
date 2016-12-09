@@ -483,7 +483,69 @@ void lcd_putc(char c){
     // -
     else if(c == '-'){
 	a = 68;
-    } else {
+    }
+
+    // _
+    else if(c == '_'){
+	a = 69;
+    }
+
+    // @
+    else if(c == '@'){
+	a = 70;
+    }
+
+    // #
+    else if(c == '#'){
+	a = 71;
+    }
+
+    // $
+    else if(c == '$'){
+	a = 72;
+    }
+    
+    // ^
+    else if(c == '^'){
+	a = 73;
+    }
+    
+    // ,
+    else if(c == ','){
+	a = 74;
+    }
+    
+    // <
+    else if(c == '<'){
+	a = 75;
+    }
+    
+    // >
+    else if(c == '>'){
+	a = 76;
+    }
+
+    // (
+    else if(c == '('){
+	a = 77;
+    }
+
+    // )
+    else if(c == ')'){
+	a = 78;
+    }
+
+    // [
+    else if(c == '['){
+	a = 79;
+    }
+
+    // ]
+    else if(c == ']'){
+	a = 80;
+    }
+    
+    else{
 	return;
     }
     
