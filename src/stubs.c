@@ -6,6 +6,7 @@
 
 #ifdef _NEWLIB_VERSION
 
+#include "stm32f4xx.h"
 #include <errno.h>
 #include <sys/stat.h>
 #include <sys/times.h>
@@ -14,7 +15,6 @@
 #undef errno
 
 extern int errno;
-static char dummy_heap[64];
 
 static int mode = 0;
 
@@ -56,9 +56,6 @@ int _isatty(int file) {
 int _lseek(int file, int ptr, int dir) {
     return 0;
 }
-caddr_t _sbrk(int incr) {
-    return (caddr_t)dummy_heap;
-}
 
 int _read(int file, char *ptr, int len) {
     return 0;
@@ -83,6 +80,29 @@ int _write(int file, char *ptr, int len) {
 	return -1;
     }
     return len;
+}
+
+caddr_t _sbrk(int incr) {
+    extern char _ebss; // Defined by the linker
+    static char *heap_end;
+    char *prev_heap_end;
+    char * stack;
+    if (heap_end == 0) {
+        heap_end = &_ebss;
+    }
+    prev_heap_end = heap_end;
+
+    
+    stack = (char*) __get_MSP();
+    if (heap_end + incr >  stack)
+    {
+	_write (STDERR_FILENO, "Heap and stack collision\n", 25);
+	errno = ENOMEM;
+	return  (caddr_t) -1;
+    }
+
+    heap_end += incr;
+    return (caddr_t) prev_heap_end;
 }
 
 
