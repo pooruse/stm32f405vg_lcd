@@ -40,18 +40,16 @@ int main(void){
     }
     #endif
 
-    
-    lcd_printf("Ackuretta LCD Test \n\r");
-    lcd_printf("number: %d\n\r", 535);
-    lcd_printf("curing time: %1.2f\n\r",32.999);
-    lcd_printf("layers: %d\n\r",500);
-    lcd_printf("description:\n\r");
-    lcd_printf("description1\n\r");
-    lcd_printf("description2\n\r");
-    lcd_printf("description3\n\r");
-    lcd_printf("description4\n\r");
-    
-    
+    lcd_printf("012345601234560123456");
+    lcd_printf("012345601234560123456");
+    lcd_printf("012345601234560123456");
+    lcd_printf("012345601234560123456");
+    lcd_printf("012345601234560123456");
+    lcd_printf("012345601234560123456");
+    lcd_printf("012345601234560123456");
+    lcd_printf("012345601234560123456");
+    lcd_set_font_addr(12, 6);
+    lcd_printf(" ");
 
     SysTick_Config(SystemCoreClock/1000);
     while(1){

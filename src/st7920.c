@@ -191,11 +191,6 @@ static void draw_rectangle(int xb, int y, int wb, int h)
 	wb++;
     }
 
-    // spection case
-    if(wb == 1){
-	wb++;
-    }
-
     xh = xb/2;
     wh = wb/2;
     _draw_rectangle(xh, y, wh, h);
@@ -244,7 +239,8 @@ static void copy_array_with_shift(
     int tail_shift){
     
     uint8_t msb, lsb;
-    uint8_t mask;
+    uint8_t head_mask;
+    uint8_t tail_mask;
     uint8_t tmp;
     int i;
 
@@ -252,22 +248,33 @@ static void copy_array_with_shift(
 	size = 15;
     }
 
-    // when head = 3, mask = 0001 1111
-    mask = (1 << (8 - head_shift)) - 1;
-
-    // start byte
-    dst[0] &= ~mask;
-    dst[0] |= (src[0] >> head_shift);
-
+    // when head = 3, head_mask = 0001 1111
+    head_mask = (1 << (8 - head_shift)) - 1;
+    if(tail_shift > 0){
+	// start byte
+	dst[0] &= ~head_mask;
+	dst[0] |= (src[0] >> head_shift);
     
-    // when tail = 5, mask = 0000 0111
-    mask = (1 << (8 - tail_shift)) - 1;
-
-    // end byte
-    dst[size] &= mask;
-    tmp = (src[size - 1] << (8 - head_shift));
-    tmp &= ~mask;
-    dst[size] |= tmp;
+	// end byte
+	// when tail = 5, tail_mask = 0000 0111
+	tail_mask = (1 << (8 - tail_shift)) - 1;
+	dst[size] &= tail_mask;
+	tmp = (src[size - 1] << (8 - head_shift));
+	tmp &= ~tail_mask;
+	dst[size] |= tmp;
+	
+    } else if(tail_shift == 0){
+	// start byte
+	dst[0] &= ~head_mask;
+	dst[0] |= (src[0] >> head_shift);
+	
+    } else {
+	tail_shift *= -1; // get abs
+	tail_mask = (1 << tail_shift) - 1;
+	tmp = tail_mask | (~head_mask);
+	dst[0] &= tmp;
+	dst[0] |= (src[0] >> head_shift) & (~tmp);
+    }
 
     // middle bytes
     for(i = 1; i < size; i++){	
@@ -323,57 +330,55 @@ static void copy_array_with_shift(
  */
 void lcd_draw_rectangle(struct st7920_draw_rectangle_t draw)
 {
-    int x,y,w,h; // unit: 1 point
-    
-    // xb = x index (unit: 8 point) 
-    int xb,wb;
-    
-    int head_shift, end_part_len;
-
+    int x_start, x_end;
+    int y, h;
+    int head_shift, tail_shift;
+    int i, k;
     uint8_t *buf;
-    int j,k;
+    int xb;
+    int dst_wb, src_wb;
 
-    draw_parameter_modify(&draw);
-    
-    x = draw.x;
-    y = draw.y;
-    w = draw.w;
-    h = draw.h;
-    buf = draw.buf;
-    xb = x/8;
-    wb = w/8;
-
-    if(wb == 0){
-	// special case
-	wb = 1;
-    }
-    
-    if( (wb * h) > draw.size){
+    if(draw.w == 0 || draw.h == 0){
 	return;
     }
-
-    head_shift = x % 8;
-    end_part_len = (x + w) % 8;
     
-    if(head_shift != 0 ||
-       end_part_len != 0) {
-	wb = wb + 1;
+    draw_parameter_modify(&draw);
+    
+    x_start = draw.x;
+    x_end = draw.x + draw.w;
+    y = draw.y;
+    h = draw.h;
+    buf = draw.buf;
+    src_wb = (draw.w - 1) / 8 + 1;
+    dst_wb = (x_end / 8) - (x_start / 8) + 1;
+    xb = x_start / 8;
+
+    head_shift = x_start % 8;
+    if( dst_wb == 1 ){
+	tail_shift = x_end % 8;
+	if(tail_shift != 0){
+	    tail_shift -= 8;
+	}
+    } else {
+	tail_shift = x_end % 8;
     }
 
     // copy graphic to screen_buf
     k = 0;
-    for(j = y; j < (h + y); j++){
+    for(i = y; i < (h + y); i++){
 	copy_array_with_shift(
 	    &buf[k],
-	    &screen_buf[16 * j + xb],
-	    (wb - 1),
+	    &screen_buf[16 * i + xb],
+	    src_wb,
 	    head_shift,
-	    end_part_len);
+	    tail_shift);
 
-	k += wb - 1;
+	k += 1;
     }
+   
+    draw_rectangle(xb, y, dst_wb, h);
+   
     
-    draw_rectangle(xb, y, wb, h);
 }
 
 void lcd_set_font_addr(int x, int y){
